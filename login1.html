@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Ek Noor Neki Da Hospital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: #eff6ff;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left {
+      width: 42%;
+      background: linear-gradient(160deg, #0a1a4e 0%, #0d1f5c 60%, #162d8a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .left::before {
+      content: '';
+      position: absolute;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      border: 60px solid rgba(79,142,247,0.1);
+      top: -90px; right: -90px;
+    }
+    .left::after {
+      content: '';
+      position: absolute;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      border: 50px solid rgba(79,142,247,0.07);
+      bottom: -70px; left: -70px;
+    }
+    .left img {
+      width: 84px; height: 84px;
+      border-radius: 50%; object-fit: cover;
+      border: 3px solid rgba(255,255,255,0.25);
+      margin-bottom: 1.6rem;
+      position: relative; z-index: 1;
+    }
+    .left h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 700; color: white;
+      text-align: center; line-height: 1.3;
+      position: relative; z-index: 1; margin-bottom: 0.9rem;
+    }
+    .left h1 span { color: #60a5fa; }
+    .left p {
+      font-size: 0.88rem; color: #bfdbfe;
+      text-align: center; line-height: 1.75;
+      max-width: 270px; position: relative; z-index: 1;
+    }
+    .dot-badge {
+      margin-top: 2rem;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px; padding: 0.45rem 1.1rem;
+      font-size: 0.8rem; color: #bfdbfe;
+      position: relative; z-index: 1;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4ade80; animation: blink 2s infinite;
+    }
+    .role-pills {
+      display: flex; gap: 8px; margin-top: 1.8rem;
+      position: relative; z-index: 1; flex-wrap: wrap;
+      justify-content: center;
+    }
+    .role-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #c7d9ff; font-size: 0.75rem;
+      padding: 5px 12px; border-radius: 20px;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── RIGHT PANEL ── */
+    .right {
+      flex: 1; display: flex;
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .box {
+      background: white; border-radius: 16px;
+      padding: 2.4rem 2rem; width: 100%; max-width: 400px;
+      box-shadow: 0 6px 30px rgba(30,95,212,0.1);
+    }
+    .box h2 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+    .box .sub  { font-size: 0.84rem; color: #94a3b8; margin-bottom: 1.7rem; }
+
+    .field { margin-bottom: 1rem; }
+    label  { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.35rem; }
+
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .icon {
+      position: absolute; left: 10px;
+      width: 15px; height: 15px;
+      color: #3b82f6; pointer-events: none;
+    }
+    input[type="email"], input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 0.7rem 0.9rem 0.7rem 2.3rem;
+      border: 1.5px solid #dbeafe; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.91rem; color: #0f172a;
+      background: #eff6ff; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      border-color: #3b82f6; background: white;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    input::placeholder { color: #cbd5e1; }
+
+    .sel-wrap { position: relative; }
+    .sel-wrap select {
+      width: 100%;
+      padding: 0.7rem 0.9rem 0.7rem 2.3rem;
+      border: 1.5px solid #dbeafe; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.91rem; color: #0f172a;
+      background: #eff6ff; outline: none;
+      cursor: pointer; appearance: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .sel-wrap select:focus {
+      border-color: #3b82f6; background: white;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .sel-wrap .icon { pointer-events: none; }
+    .sel-arrow {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: #94a3b8; font-size: 12px;
+    }
+
+    .eye {
+      position: absolute; right: 10px;
+      background: none; border: none; cursor: pointer;
+      color: #94a3b8; padding: 0;
+      display: flex; align-items: center;
+    }
+    .eye:hover { color: #3b82f6; }
+    .eye svg { width: 15px; height: 15px; }
+
+    .btn {
+      width: 100%; padding: 0.8rem;
+      background: linear-gradient(135deg, #1e5fd4, #0a2463);
+      color: white; border: none; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; margin-top: 0.6rem;
+      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 4px 14px rgba(30,95,212,0.25);
+    }
+    .btn:hover   { opacity: 0.9; }
+    .btn:active  { transform: scale(0.98); }
+    .btn:disabled { background: #bfdbfe; cursor: not-allowed; box-shadow: none; }
+
+    .msg {
+      margin-top: 0.85rem; padding: 0.7rem 1rem;
+      border-radius: 8px; font-size: 0.83rem;
+      text-align: center; font-weight: 500; display: none;
+    }
+    .msg.success { background: #eff6ff; color: #1e5fd4; border: 1px solid #bfdbfe; display: block; }
+    .msg.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1.2rem 0;
+      color: #cbd5e1; font-size: 0.78rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: #e2e8f0;
+    }
+
+    .link-row {
+      text-align: center; font-size: 0.83rem;
+      color: #94a3b8; margin-top: 1.1rem;
+    }
+    .link-row a { color: #1e5fd4; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .link-row a:hover { text-decoration: underline; }
+
+    .access-note {
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 0.78rem; color: #15803d;
+      margin-top: 1rem; display: none;
+    }
+    .access-note.show { display: block; }
+
+    @media (max-width: 650px) {
+      body { flex-direction: column; }
+      .left { width: 100%; padding: 2.5rem 2rem; min-height: auto; }
+      .left::before, .left::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="left">
+  <img src="logo.jpg" alt="Logo" onerror="this.style.display='none'"/>
+  <h1>Ek Noor<br/><span>Neki Da Hospital</span></h1>
+  <p>Compassionate healthcare serving the community of Alamgir since inception.</p>
+  <div class="dot-badge"><div class="dot"></div> Portal is live — 24/7</div>
+  <div class="role-pills">
+    <span class="role-pill">🛡️ Admin</span>
+    <span class="role-pill">👨‍⚕️ Doctor</span>
+    <span class="role-pill">🏠 Patient</span>
+    <span class="role-pill">🙋 Visitor</span>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right">
+  <div class="box">
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <h2>Welcome back 👋</h2>
+      <p class="sub">Sign in to access your hospital portal</p>
+
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
+          </svg>
+          <input type="email" id="l-email" placeholder="you@gmail.com" oninput="checkEmailRole()"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="l-pass" placeholder="••••••••"/>
+          <button class="eye" onclick="togglePw('l-pass', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="role-hint" class="access-note"></div>
+
+      <button class="btn" id="l-btn" onclick="doLogin()">Sign In</button>
+      <div class="msg" id="l-msg"></div>
+      <div class="link-row" style="margin-top:1rem;">
+        Don't have an account? <a onclick="show('register-form')">Register here</a>
+      </div>
+      <div class="link-row" style="margin-top:0.5rem; font-size:0.75rem;">
+        Password not working? <a onclick="clearMyAccount()">Reset my account</a>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register-form" style="display:none">
+      <h2>Create account</h2>
+      <p class="sub">Register to access the hospital portal</p>
+
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
+          </svg>
+          <input type="email" id="r-email" placeholder="you@gmail.com"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="r-pass" placeholder="Min. 8 characters"/>
+          <button class="eye" onclick="togglePw('r-pass', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="r-conf" placeholder="Re-enter password"/>
+        </div>
+      </div>
+
+      <button class="btn" id="r-btn" onclick="doRegister()">Create Account</button>
+      <div class="msg" id="r-msg"></div>
+      <div class="link-row">Already have an account? <a onclick="show('login-form')">Sign in here</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ────────────────────────────────────────────────────────
+  //  AUTO-REDIRECT: if already logged in, skip login page
+  // ────────────────────────────────────────────────────────
+  (function() {
+    try {
+      var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      if (u && u.role) {
+        if (u.role === 'patient' || u.role === 'visitor') {
+          window.location.replace('home (1).html');
+        } else if (u.role === 'admin') {
+          window.location.replace('admin_dashboard (1).html');
+        } else if (u.role === 'doctor') {
+          window.location.replace('doctor_dashboard (1).html');
+        }
+      }
+    } catch(e) {}
+  })();
+
+  // ────────────────────────────────────────────────────────
+  //  ACCESS CONTROL — stored in localStorage by Admin
+  //  Keys:
+  //    hospital_approved_doctors  → JSON array of email strings
+  //    hospital_approved_admins   → JSON array of email strings
+  //    hospital_users             → JSON array of {email, password, createdAt}
+  // ────────────────────────────────────────────────────────
+  function getApprovedDoctors() {
+    try { return JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]'); } catch { return []; }
+  }
+  function getApprovedAdmins() {
+    try { return JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]'); } catch { return []; }
+  }
+  function getLocalUsers() {
+    try { return JSON.parse(localStorage.getItem('hospital_users') || '[]'); } catch { return []; }
+  }
+
+  // Detect role from email as user types
+  function checkEmailRole() {
+    const email = document.getElementById('l-email').value.trim().toLowerCase();
+    const hint  = document.getElementById('role-hint');
+    if (!email) { hint.className = 'access-note'; return; }
+
+    const admins  = getApprovedAdmins().map(e => e.toLowerCase());
+    const doctors = getApprovedDoctors().map(e => e.toLowerCase());
+
+    if (admins.includes(email)) {
+      hint.textContent = '🛡️ Admin account detected — you will be directed to the Admin Dashboard.';
+      hint.className = 'access-note show';
+    } else if (doctors.includes(email)) {
+      hint.textContent = '👨‍⚕️ Doctor account detected — you will be directed to the Doctor Dashboard.';
+      hint.className = 'access-note show';
+    } else {
+      hint.className = 'access-note';
+    }
+  }
+
+  // ── CLEAR ACCOUNT (for users with stale/broken localStorage data) ──
+  function clearMyAccount() {
+    const email = document.getElementById('l-email').value.trim().toLowerCase();
+    if (!email) { showMsg('l-msg','error','Enter your email first, then click Reset.'); return; }
+    const users = getLocalUsers().filter(u => u.email.toLowerCase() !== email);
+    localStorage.setItem('hospital_users', JSON.stringify(users));
+    showMsg('l-msg','success','Account cleared. Please register again with a new password.');
+    setTimeout(() => show('register-form'), 1500);
+  }
+
+
+  function show(id) {
+    document.getElementById('login-form').style.display    = id === 'login-form'    ? 'block' : 'none';
+    document.getElementById('register-form').style.display = id === 'register-form' ? 'block' : 'none';
+    document.getElementById('r-msg').className = 'msg';
+    document.getElementById('l-msg').className = 'msg';
+  }
+
+  // ── EYE TOGGLE ──
+  const eyeOpen   = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>`;
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    const vis = inp.type === 'password';
+    inp.type  = vis ? 'text' : 'password';
+    btn.querySelector('svg').innerHTML = vis ? eyeClosed : eyeOpen;
+  }
+
+  function showMsg(id, type, text) {
+    const el = document.getElementById(id);
+    el.className   = 'msg ' + type;
+    el.textContent = text;
+  }
+
+  // ── REGISTER ──
+  function doRegister() {
+    const email    = document.getElementById('r-email').value.trim();
+    const password = document.getElementById('r-pass').value.trim();
+    const confirm  = document.getElementById('r-conf').value.trim();
+    const btn      = document.getElementById('r-btn');
+
+    if (!email || !password || !confirm) { showMsg('r-msg','error','All fields are required.'); return; }
+    if (!email.toLowerCase().endsWith('@gmail.com')) { showMsg('r-msg','error','Please enter a valid Gmail address.'); return; }
+    if (password.length < 8)  { showMsg('r-msg','error','Password must be at least 8 characters.'); return; }
+    if (!/\d/.test(password)) { showMsg('r-msg','error','Password must contain at least one number.'); return; }
+    if (password !== confirm)  { showMsg('r-msg','error','Passwords do not match.'); return; }
+
+    const users = getLocalUsers();
+    const exists = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (exists) { showMsg('r-msg','error','An account with this email already exists. Please sign in.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Registering...';
+    saveLocalUser(email, password, 'patient');
+    showMsg('r-msg','success','Account created! Please sign in.');
+    setTimeout(() => { show('login-form'); btn.disabled = false; btn.textContent = 'Create Account'; }, 1200);
+  }
+
+  function saveLocalUser(email, password, role) {
+    const users = getLocalUsers();
+    if (!users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+      users.push({ email, password, role: role || 'patient', createdAt: new Date().toISOString() });
+      localStorage.setItem('hospital_users', JSON.stringify(users));
+    }
+  }
+
+  // ── LOGIN ──
+  function doLogin() {
+    const email    = document.getElementById('l-email').value.trim();
+    const password = document.getElementById('l-pass').value.trim();
+    const btn      = document.getElementById('l-btn');
+
+    if (!email || !password) { showMsg('l-msg','error','Please enter your email and password.'); return; }
+    if (!email.toLowerCase().endsWith('@gmail.com')) { showMsg('l-msg','error','Please enter a valid Gmail address.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Signing in...';
+
+    const emailLower  = email.toLowerCase();
+    const admins      = getApprovedAdmins().map(e => e.toLowerCase());
+    const doctors     = getApprovedDoctors().map(e => e.toLowerCase());
+
+    // Determine role
+    let role = 'patient';
+    if (admins.includes(emailLower))        role = 'admin';
+    else if (doctors.includes(emailLower))  role = 'doctor';
+
+    // ── Check credentials from localStorage (no server needed) ──
+    const localUsers = getLocalUsers();
+
+    // For patient/visitor roles: must have a registered account
+    if (role === 'patient') {
+      const emailExists = localUsers.find(u => u.email.toLowerCase() === emailLower);
+      if (!emailExists) {
+        showMsg('l-msg','error','No account found with this email. Please register first.');
+        btn.disabled = false; btn.textContent = 'Sign In';
+        return;
+      }
+      // Compare passwords (trim both sides to avoid hidden spaces)
+      const storedPassword = (emailExists.password || '').trim();
+      if (storedPassword !== password) {
+        showMsg('l-msg','error','Incorrect password. Please try again.');
+        btn.disabled = false; btn.textContent = 'Sign In';
+        return;
+      }
+      // Carry over role if set (visitor / patient), defaulting to patient for old accounts
+      role = emailExists.role || 'patient';
+    }
+
+    // Admin/Doctor: approved list is the gate; Patient/Visitor: validated above
+    localStorage.setItem('hospital_user', JSON.stringify({
+      email,
+      name: email.split('@')[0],
+      role
+    }));
+
+    showMsg('l-msg','success','Login successful! Redirecting...');
+
+    let dest = 'home (1).html';
+    if (role === 'admin')        dest = 'admin_dashboard (1).html';
+    else if (role === 'doctor')  dest = 'doctor_dashboard (1).html';
+
+    setTimeout(() => { window.location.href = dest; }, 500);
+  }
+</script>
+</body>
+</html>

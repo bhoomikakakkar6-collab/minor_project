@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- home page is public — no auth guard needed -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.jpg" type="image">
+<title>Ek Noor Neki Da Hospital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+ :root {
+  --teal-deep:   #0a2472;
+  --teal:        #1a56db;
+  --teal-mid:    #3b82f6;
+  --teal-soft:   #dbeafe;
+  --gold:        #60a5fa;
+  --gold-light:  #bfdbfe;
+  --gold-pale:   #eff6ff;
+  --cream:       #f8faff;
+  --white:       #ffffff;
+  --text-dark:   #0f172a;
+  --text-body:   #1e3a5f;
+  --text-muted:  #64748b;
+  --shadow-sm:   0 2px 12px rgba(10,36,114,0.10);
+  --shadow-md:   0 8px 32px rgba(10,36,114,0.16);
+  --shadow-lg:   0 20px 56px rgba(10,36,114,0.22);
+  --radius:      20px;
+  --radius-sm:   12px;
+}
+
+  *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text-body);
+  overflow-x: hidden;
+}
+
+/* ═══════════════ NOISE TEXTURE OVERLAY ═══════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.5;
+}
+
+/* ════════════════════════════════
+   UNIFIED NAVBAR  –  Ek Noor Neki Da
+   ════════════════════════════════ */
+
+@keyframes navAnim {
+  from { background: rgba(13,31,92,0.97); }
+  to   { background: rgba(26,59,181,0.97); }
+}
+
+.navbar-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 68px;
+  animation: navAnim 5s infinite alternate;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(13,31,92,0.25);
+}
+
+/* Logo */
+.nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+.nav-brand img { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); object-fit: cover; }
+.nav-brand-name {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+.nav-brand-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+}
+
+/* Links */
+.nav-menu { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; align-items: center; }
+.nav-menu li a {
+  text-decoration: none;
+  color: rgba(255,255,255,0.80);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  display: block;
+}
+.nav-menu li a:hover,
+.nav-menu li a.active {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+.nav-menu li a.active { font-weight: 700; }
+
+/* Login button in nav */
+.nav-login-btn {
+  background: rgba(255,255,255,0.18);
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  transition: 0.2s, border 0.2s !important;
+}
+.nav-login-btn:hover {
+  background: white !important;
+  color: var(--teal-deep) !important;
+  border-color: white !important;
+}
+
+/* Hamburger */
+.menu-toggle {
+  display: none;
+  font-size: 26px;
+  color: white;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+}
+
+/* ── ROLE BARS ── */
+.role-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  position: sticky;
+  top: 68px;
+  z-index: 1099;
+  backdrop-filter: blur(8px);
+}
+.role-bar.admin-bar  { background: rgba(109,40,217,0.93); box-shadow: 0 2px 12px rgba(109,40,217,0.35); }
+.role-bar.doctor-bar { background: rgba(5,150,105,0.93);  box-shadow: 0 2px 12px rgba(5,150,105,0.35); }
+.role-bar.patient-bar { background: rgba(10,36,114,0.93); box-shadow: 0 2px 12px rgba(10,36,114,0.35); }
+
+.role-bar-left { display: flex; align-items: center; gap: 8px; color: white; font-weight: 700; letter-spacing: 0.3px; }
+.role-bar-badge {
+  background: rgba(255,255,255,0.22);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.role-bar-links { display: flex; gap: 4px; }
+.role-bar-links a {
+  color: rgba(255,255,255,0.88);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.role-bar-links a:hover { background: rgba(255,255,255,0.22); color: white; }
+
+.role-bar-logout {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.30);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.3px;
+}
+.role-bar-logout:hover { background: rgba(255,255,255,0.28); }
+
+/* ── MOBILE ── */
+@media (max-width: 820px) {
+  .menu-toggle { display: block; }
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 68px;
+    left: 0; right: 0;
+    background: rgba(13,31,92,0.98);
+    padding: 12px 16px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    gap: 2px;
+  }
+  .nav-menu.open { display: flex; }
+  .nav-menu li a { padding: 11px 16px; border-radius: 8px; font-size: 14px; }
+  .role-bar-links { display: none; }
+  .role-bar { justify-content: space-between; }
+}
+
+/* ═══════════════ HERO ═══════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+  padding: 80px 24px 60px;
+}
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(170deg, rgba(10,36,114,0.85) 0%, rgba(26,86,219,0.65) 60%, rgba(10,36,114,0.92) 100%);
+  z-index: -1;
+}
+/* blue shimmer lines */
+.hero-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 80px,
+    rgba(96,165,250,0.04) 80px,
+    rgba(96,165,250,0.04) 81px
+  );
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 9vw, 96px);
+  font-weight: 700;
+  line-height: 1.0;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.4s forwards;
+}
+.hero-italic {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-sub {
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.6s forwards;
+}
+.hero-typewriter {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: clamp(13px, 2vw, 16px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  min-height: 24px;
+  display: block;
+  margin-bottom: 36px;
+  transition: opacity 0.4s;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.8s forwards;
+}
+.hero-typewriter.fade { opacity: 0 !important; }
+
+.hero-cta-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.9s 1s forwards;
+}
+.btn-primary-hero {
+  padding: 14px 34px;
+  background: white;
+  color: var(--teal-deep);
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: all 0.25s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 20px rgba(255,255,255,0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary-hero:hover {
+  background: #dbeafe;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,255,255,0.4);
+  color: var(--teal-deep);
+}
+.btn-outline-hero {
+  padding: 13px 32px;
+  background: transparent;
+  color: white;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: all 0.25s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-outline-hero:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ═══════════════ STATS BAR ═══════════════ */
+.stats-bar {
+  background: var(--teal-deep);
+  padding: 28px 36px;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.stat-item {
+  flex: 1;
+  min-width: 160px;
+  max-width: 220px;
+  text-align: center;
+  padding: 12px 20px;
+  border-right: 1px solid rgba(96,165,250,0.2);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* ═══════════════ SECTION HEADINGS ═══════════════ */
+.section-eyebrow {
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: block;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+.section-title em { font-style: italic; color: var(--teal-mid); }
+.section-sub {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ═══════════════ SERVICES SECTION ═══════════════ */
+.services-section {
+  padding: 96px 36px 80px;
+  background: var(--cream);
+  position: relative;
+}
+.services-section::before {
+  content: 'CARE';
+  position: absolute;
+  top: 30px;
+  right: -10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 160px;
+  font-weight: 700;
+  color: rgba(10,36,114,0.04);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 960px;
+  margin: 52px auto 0;
+}
+.svc-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 36px 28px 30px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid rgba(10,36,114,0.06);
+}
+.svc-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(96,165,250,0.35);
+}
+.svc-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-mid));
+  border-radius: var(--radius) var(--radius) 0 0;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+.svc-card.emg::before { background: linear-gradient(90deg, #dc2626, #ef4444); }
+.svc-card.vis::before { background: linear-gradient(90deg, #059669, #10b981); }
+.svc-card:hover::before { transform: scaleX(1); }
+
+.svc-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: var(--teal-soft);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+.svc-icon svg { width: 24px; height: 24px; fill: var(--teal); transition: fill 0.3s; }
+.svc-card.emg .svc-icon { background: #fef2f2; }
+.svc-card.emg .svc-icon svg { fill: #dc2626; }
+.svc-card.vis .svc-icon { background: #ecfdf5; }
+.svc-card.vis .svc-icon svg { fill: #059669; }
+.svc-card:hover .svc-icon { transform: scale(1.08); }
+
+.svc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+.svc-desc {
+  font-size: 14.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  flex: 1;
+}
+.svc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: gap 0.2s, color 0.2s;
+  padding: 0;
+  margin-top: 4px;
+}
+.svc-card.emg .svc-btn { color: #dc2626; }
+.svc-card.vis .svc-btn { color: #059669; }
+.svc-btn:hover { gap: 10px; }
+
+/* ═══════════════ DEPARTMENTS ═══════════════ */
+.depts-section {
+  padding: 80px 36px;
+  background: white;
+}
+.depts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  margin: 52px auto 0;
+}
+.dept-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid rgba(10,36,114,0.08);
+  transition: all 0.3s ease;
+  text-align: center;
+  cursor: default;
+}
+.dept-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(96,165,250,0.4);
+}
+.dept-card-header {
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal));
+  color: white;
+  padding: 10px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.dept-card-body {
+  padding: 20px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.dept-card-body img {
+  height: 72px;
+  object-fit: contain;
+  transition: transform 0.3s;
+}
+.dept-card:hover .dept-card-body img { transform: scale(1.1); }
+.dept-card-footer {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 0 10px 14px;
+}
+
+/* ═══════════════ CONTACT SECTION ═══════════════ */
+.contact-section {
+  background: linear-gradient(160deg, var(--teal-deep) 0%, var(--teal) 100%);
+  padding: 96px 36px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.contact-section::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(96,165,250,0.08);
+  pointer-events: none;
+}
+.contact-section::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(96,165,250,0.05);
+  pointer-events: none;
+}
+.contact-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.contact-header .section-eyebrow { color: var(--gold); }
+.contact-header .section-title { color: white; }
+.contact-header .section-sub { color: rgba(255,255,255,0.55); }
+
+.cinfo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  max-width: 1000px;
+  margin: 0 auto 20px;
+}
+.cinfo-card {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 30px 22px 26px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+.cinfo-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(96,165,250,0.35);
+  color: white;
+}
+.cinfo-icon-wrap {
+  width: 52px; height: 52px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cinfo-icon-wrap iframe {
+  width: 80px; height: 80px;
+  margin: -14px;
+  border: none;
+  pointer-events: none;
+}
+.cinfo-label {
+  font-size: 10.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+.cinfo-value {
+  font-size: 14.5px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.65;
+}
+.cinfo-value strong { display: block; font-weight: 700; color: white; }
+
+.cinfo-hours {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 36px 48px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 32px;
+  align-items: center;
+}
+.cinfo-hours-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: rgba(96,165,250,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  grid-row: 1 / 3;
+}
+.cinfo-hours-label {
+  font-size: 10.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  align-self: end;
+}
+.cinfo-hours-slots {
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+  align-self: start;
+}
+.cinfo-slot {
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+}
+.cinfo-slot span {
+  color: #4ade80;
+  font-weight: 700;
+  display: block;
+  font-size: 13.5px;
+}
+
+/* ═══════════════ FOOTER ═══════════════ */
+.site-footer {
+  background: var(--teal-deep);
+  color: rgba(18, 16, 16, 0.88);
+  padding: 64px 36px 28px;
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.footer-brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+  display: block;
+}
+.footer-desc {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.75);
+  max-width: 320px;
+}
+.footer-gold-line {
+  width: 40px;
+  height: 2px;
+  background: #dbeafe;
+  margin: 16px 0;
+}
+.footer-col h4 {
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col ul li { margin-bottom: 10px; font-size: 14px; line-height: 1.7; color: rgba(18, 16, 16, 0.75); }
+.footer-col a { color: rgba(41, 113, 213, 0.9); text-decoration: none; transition: color 0.2s; }
+.footer-col a:hover { color: #dbeafe; }
+.footer-bottom {
+  max-width: 1100px;
+  margin: 28px auto 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: rgba(251, 247, 247, 0.65);
+}
+
+/* ═══════════════ APPOINTMENT MODAL ═══════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(10,36,114,0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow-y: auto;
+  animation: fadeInBg 0.2s ease;
+}
+@keyframes fadeInBg { from { opacity: 0 } to { opacity: 1 } }
+
+.modal-box {
+  background: white;
+  margin: 4% auto;
+  width: 90%;
+  max-width: 560px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(10,36,114,0.4);
+  animation: slideUpModal 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header-strip {
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal));
+  padding: 32px 40px 28px;
+  position: relative;
+}
+.modal-header-strip::after {
+  content: '✚';
+  position: absolute;
+  right: 40px;
+  bottom: -18px;
+  font-size: 36px;
+  color: white;
+  opacity: 0.1;
+  font-style: normal;
+  font-weight: 900;
+}
+.modal-eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  color: white;
+  font-weight: 700;
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.modal-close:hover { background: rgba(255,255,255,0.28); transform: rotate(90deg); }
+
+.modal-body { padding: 36px 40px 40px; }
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(10,36,114,0.15);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14.5px;
+  color: var(--text-dark);
+  background: var(--cream);
+  transition: all 0.2s;
+  outline: none;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--teal);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+}
+.field-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.optional-tag { font-weight: 400; color: var(--text-muted); font-size: 11px; margin-left: 4px; text-transform: none; letter-spacing: 0; }
+.form-actions { display: flex; gap: 12px; margin-top: 28px; }
+.btn-submit {
+  flex: 1; padding: 14px;
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal));
+  color: white; border: none; border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.25s;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(10,36,114,0.25);
+}
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10,36,114,0.35);
+}
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-cancel {
+  padding: 14px 22px;
+  background: var(--cream); color: var(--text-muted);
+  border: 1.5px solid rgba(10,36,114,0.1);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-cancel:hover { background: var(--teal-soft); color: var(--teal-deep); border-color: var(--teal-soft); }
+
+.success-msg {
+  display: none;
+  text-align: center;
+  padding: 50px 20px;
+}
+.success-checkmark {
+  width: 80px; height: 80px;
+  background: #ecfdf5;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 24px;
+  box-shadow: 0 0 0 12px rgba(16,185,129,0.08);
+}
+.success-msg h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: var(--teal-deep);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.success-msg p { color: var(--text-muted); font-size: 15px; line-height: 1.6; }
+
+/* ═══════════════ AI FLOAT BUTTON ═══════════════ */
+#ai-float-btn {
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 30px !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+}
+#ai-float-bubble {
+  background: var(--teal-deep);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(10,36,114,0.35);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  animation: aiBubbleFloat 2s ease-in-out infinite;
+  border: 1px solid rgba(96,165,250,0.3);
+}
+@keyframes aiBubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+#ai-float-circle {
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal-mid));
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--gold);
+  animation: aiPulse 2s infinite;
+  transition: transform 0.2s;
+}
+#ai-float-circle:hover { transform: scale(1.1); }
+@keyframes aiPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(96,165,250,0.55), 0 6px 20px rgba(10,36,114,0.4); }
+  70%  { box-shadow: 0 0 0 14px rgba(96,165,250,0), 0 6px 20px rgba(10,36,114,0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(96,165,250,0), 0 6px 20px rgba(10,36,114,0.4); }
+}
+#ai-float-circle svg { width: 28px; height: 28px; fill: white; }
+
+#ai-modal-overlay {
+  display: none;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999999 !important;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#ai-modal-overlay.ai-active { display: flex !important; }
+#ai-modal-box {
+  width: 100%;
+  max-width: 780px;
+  height: min(700px, calc(100vh - 40px));
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative;
+}
+#ai-close-btn {
+  position: absolute; top: 14px; right: 16px; z-index: 10;
+  background: rgba(255,255,255,0.18); border: none; color: white;
+  width: 34px; height: 34px; border-radius: 50%;
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#ai-close-btn:hover { background: rgba(255,255,255,0.35); }
+#ai-modal-box iframe { width: 100%; height: 100%; border: none; display: block; }
+
+/* pulse dot */
+.pulse-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  margin-right: 6px;
+  animation: pulse 1.5s infinite;
+  vertical-align: middle;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.5; transform:scale(1.4); }
+}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media (max-width: 900px) {
+  .cinfo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 820px) {
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .cinfo-hours { grid-template-columns: 1fr; padding: 24px 20px; }
+  .cinfo-hours-icon { grid-row: auto; }
+  .cinfo-hours-slots { gap: 16px; }
+}
+@media (max-width: 640px) {
+  .stats-bar { gap: 0; }
+  .stat-item { border-right: none; border-bottom: 1px solid rgba(96,165,250,0.2); }
+  .stat-item:last-child { border-bottom: none; }
+  .services-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .modal-box { margin: 8% auto; }
+  .modal-header-strip, .modal-body { padding-left: 24px; padding-right: 24px; }
+  .cinfo-grid { grid-template-columns: 1fr; }
+  .navbar { padding: 0 20px; }
+}
+
+/* ═══════════════ ANNOUNCEMENTS SECTION ═══════════════ */
+.announcements-section {
+  padding: 88px 36px 80px;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+.announcements-section::before {
+  content: 'NEWS';
+  position: absolute;
+  top: 20px; right: -10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 160px;
+  font-weight: 700;
+  color: rgba(10,36,114,0.03);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.ann-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
+  max-width: 1100px;
+  margin: 52px auto 0;
+}
+
+.ann-card {
+  background: var(--cream);
+  border-radius: var(--radius);
+  border: 1px solid rgba(10,36,114,0.08);
+  padding: 28px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.ann-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-mid));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.ann-card.urgent::before { background: linear-gradient(90deg, #dc2626, #ef4444); }
+.ann-card.info::before   { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+.ann-card.event::before  { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+
+.ann-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(96,165,250,0.3);
+}
+
+.ann-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  width: fit-content;
+}
+.ann-tag.general { background: rgba(26,86,219,0.1);  color: var(--teal); }
+.ann-tag.urgent  { background: rgba(220,38,38,0.1);  color: #dc2626; }
+.ann-tag.info    { background: rgba(8,145,178,0.1);  color: #0891b2; }
+.ann-tag.event   { background: rgba(124,58,237,0.1); color: #7c3aed; }
+
+.ann-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+.ann-body {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  flex: 1;
+}
+.ann-date {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ann-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.ann-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+.ann-empty p { font-size: 15px; }
+
+@media (max-width: 640px) {
+  .ann-grid { grid-template-columns: 1fr; }
+  .announcements-section { padding: 60px 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ UNIFIED NAVBAR ══ -->
+<nav class="navbar-custom" id="mainNavbar">
+  <a class="nav-brand" href="home (1).html">
+    <img src="logo.jpg" alt="Ek Noor Logo">
+    <div>
+      <span class="nav-brand-name">Ek Noor Neki Da</span>
+      <span class="nav-brand-sub">Hospital Alamgir</span>
+    </div>
+  </a>
+  <button class="menu-toggle" onclick="toggleNavMenu()" aria-label="Toggle menu">☰</button>
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="home (1).html" class="active">Home</a></li>
+    <li><a href="doctors.html">Doctors</a></li>
+    <li><a href="patient.html">Patient</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="videos.html">Videos</a></li>
+    <li><a href="assistant.html">AI Assistant</a></li>
+    <li><a href="contact (5).html">Contact</a></li>
+    <li><a href="login1.html" class="nav-login-btn" id="navLoginBtn">Login</a></li>
+    <li id="navUserItem" style="display:none;"><a href="#" class="nav-login-btn" id="navUserId"></a></li>
+    <li id="navLogoutItem" style="display:none;"><a href="#" class="nav-login-btn" id="navLogoutBtn">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- ── ADMIN ROLE BAR ── -->
+<div class="role-bar admin-bar" id="adminBar">
+  <div class="role-bar-left">
+    🛡️ &nbsp;<span id="adminBarName">Admin</span>
+    <span class="role-bar-badge">Admin Panel</span>
+  </div>
+  <div class="role-bar-links">
+    <a href="admin_dashboard (1).html">📊 Dashboard</a>
+    <a href="admin_dashboard (1).html" onclick="goToSection('appointments')">📅 Appointments</a>
+    <a href="admin_dashboard (1).html" onclick="goToSection('patients')">👥 Patients</a>
+    <a href="admin_dashboard (1).html" onclick="goToSection('doctors')">👨‍⚕️ Doctors</a>
+    <a href="admin_dashboard (1).html" onclick="goToSection('access')">🛡️ Access</a>
+  </div>
+  <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
+</div>
+
+<!-- ── DOCTOR ROLE BAR ── -->
+<div class="role-bar doctor-bar" id="doctorBar">
+  <div class="role-bar-left">
+    👨‍⚕️ &nbsp;<span id="doctorBarName">Doctor</span>
+    <span class="role-bar-badge">Doctor Portal</span>
+  </div>
+  <div class="role-bar-links">
+    <a href="doctor_dashboard (1).html">🩺 Dashboard</a>
+    <a href="doctor_dashboard (1).html#appointments">📅 Appointments</a>
+    <a href="patient.html">👥 Patients</a>
+  </div>
+  <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
+</div>
+
+<!-- ── PATIENT WELCOME BAR ── -->
+<div class="role-bar patient-bar" id="patientBar">
+  <div class="role-bar-left">
+    🏥 &nbsp;Welcome back, <span id="patientBarName" style="color:rgba(255,255,255,0.9);font-weight:700;">Patient</span>
+    <span id="patientBarId" style="font-size:12px; color:rgba(255,255,255,0.75); margin-left:12px;">ID: -</span>
+    <span class="role-bar-badge">Patient</span>
+  </div>
+  <div class="role-bar-links">
+    <a href="patient.html">📋 My Records</a>
+    <a href="patient.html#appointments" >📅 Book Appointment</a>
+  </div>
+  <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <video autoplay muted loop playsinline class="hero-video">
+    <source src="gif.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+
+  <span class="hero-eyebrow">Gurudwara Alamgir Sahib · Ludhiana, Punjab</span>
+  <h1>Welcome to<br><span class="hero-italic">Ek Noor Neki Da</span></h1>
+  <p class="hero-sub">DO COME &amp; <span class="hero-typewriter" id="heroText"></span></p>
+  <p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:32px; max-width:520px; line-height:1.7;">
+    Dedicated to compassionate healthcare for all — irrespective of financial constraints.
+    Rooted in service, guided by care.
+  </p>
+
+  <div class="hero-cta-group">
+    <button class="btn-primary-hero" onclick="openModal()">
+      🗓️ Book Appointment
+    </button>
+    <a class="btn-outline-hero" href="https://wa.me/919876413100" target="_blank">
+      🚑 Emergency · 24/7
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════ STATS BAR ═══════════════ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">14+</div>
+    <div class="stat-label">Specialist Doctors</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">Emergency Care</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Departments</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Compassion</div>
+  </div>
+</div>
+
+<!-- ═══════════════ SERVICES ═══════════════ -->
+<section class="services-section">
+  <div style="text-align:center;">
+    <span class="section-eyebrow">What We Offer</span>
+    <h2 class="section-title">Here for You, <em>Always</em></h2>
+    <p class="section-sub">Everything you need, available around the clock — delivered with dignity and care.</p>
+  </div>
+
+  <div class="services-grid">
+    <!-- Appointment -->
+    <div class="svc-card">
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 6h-4V4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v17c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V8c0-1.1-.9-2-2-2m0 14h-9v-5H7v5H4V4h10v3c0 .55.45 1 1 1h5z"/>
+          <path d="M16 10h2v2h-2zm0 4h2v2h-2zm-6-8H8v2H6v2h2v2h2v-2h2V8h-2z"/>
+        </svg>
+      </div>
+      <h3 class="svc-title">Book an Appointment</h3>
+      <p class="svc-desc">14+ doctors across all departments. Fast, simple, and completely hassle-free. Your health shouldn't wait.</p>
+      <button class="svc-btn" onclick="openModal()">Reserve your slot →</button>
+    </div>
+
+    <!-- Emergency -->
+    <div class="svc-card emg">
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.1 7.8c-.38-.5-.97-.8-1.6-.8H15V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2 0 1.65 1.35 3 3 3s3-1.35 3-3h4c0 1.65 1.35 3 3 3s3-1.35 3-3c1.1 0 2-.9 2-2v-3.67c0-.43-.14-.86-.4-1.2zM17.5 9l1.5 2h-4V9zM7 19a1.003 1.003 0 0 1-.87-1.5c.37-.63 1.36-.63 1.73 0 .09.15.13.32.13.49 0 .55-.45 1-1 1zm10 0a1.003 1.003 0 0 1-.87-1.5c.37-.63 1.36-.63 1.73 0 .09.15.13.32.13.49 0 .55-.45 1-1 1z"/>
+          <path d="M9.5 7h-2v2.5H5v2h2.5V14h2v-2.5H12v-2H9.5z"/>
+        </svg>
+      </div>
+      <h3 class="svc-title">Emergency Services</h3>
+      <p class="svc-desc"><span class="pulse-dot"></span>Ambulance dispatch and emergency care available round the clock. One call, immediate response.</p>
+      <a class="svc-btn" href="https://wa.me/919876413100" target="_blank">Call emergency →</a>
+    </div>
+
+    <!-- Visit -->
+    <div class="svc-card vis">
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+      </div>
+      <h3 class="svc-title">Visit the Hospital</h3>
+      <p class="svc-desc">Open 24 hours, 7 days a week. Gurudwara Alamgir Sahib, Malerkotla Road, Ludhiana.</p>
+      <a class="svc-btn" href="https://www.google.com/maps/place/Ek+Noor+Neki+da+Hospital/@30.8145395,75.8647397,17z" target="_blank">Get directions →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ANNOUNCEMENTS ═══════════════ -->
+<section class="announcements-section" id="announcements">
+  <div style="text-align:center;">
+    <span class="section-eyebrow">Latest Updates</span>
+    <h2 class="section-title">Recent <em>Announcements</em></h2>
+    <p class="section-sub">Stay up to date with the latest news, events, and important notices from the hospital.</p>
+  </div>
+  <div class="ann-grid" id="annGrid">
+    <!-- Loaded dynamically from localStorage -->
+  </div>
+</section>
+
+
+<!-- ═══════════════ DEPARTMENTS ═══════════════ -->
+<section class="depts-section">
+  <div style="text-align:center;">
+    <span class="section-eyebrow">Specialisations</span>
+    <h2 class="section-title">Our <em>Departments</em></h2>
+    <p class="section-sub">Comprehensive medical specialties under one roof, staffed by experienced professionals.</p>
+  </div>
+
+  <div class="depts-grid">
+    <div class="dept-card">
+      <div class="dept-card-header">General Surgeons</div>
+      <div class="dept-card-body"><img src="surgery.png" alt="General Surgery"></div>
+      <div class="dept-card-footer">Advanced surgical care with precision.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Physicians</div>
+      <div class="dept-card-body"><img src="physician-helthcare.png" alt="Physicians"></div>
+      <div class="dept-card-footer">Expert diagnosis &amp; complete healthcare.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">OB-GYN</div>
+      <div class="dept-card-body"><img src="gynecologist.png" alt="OB-GYN"></div>
+      <div class="dept-card-footer">Women's health &amp; maternity care.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Urologist</div>
+      <div class="dept-card-body"><img src="urologist.png" alt="Urology"></div>
+      <div class="dept-card-footer">Kidney &amp; urinary treatment experts.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Pediatrics</div>
+      <div class="dept-card-body"><img src="pediatrics.png" alt="Pediatrics"></div>
+      <div class="dept-card-footer">Child healthcare specialists.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Ophthalmologist</div>
+      <div class="dept-card-body"><img src="vision-care.png" alt="Ophthalmology"></div>
+      <div class="dept-card-footer">Eye care &amp; vision treatment.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Orthopedics</div>
+      <div class="dept-card-body"><img src="orthopedics.png" alt="Orthopedics"></div>
+      <div class="dept-card-footer">Bone &amp; joint care specialists.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Neurosurgeons</div>
+      <div class="dept-card-body"><img src="neurosurgeon.png" alt="Neurosurgery"></div>
+      <div class="dept-card-footer">Brain and Spine Surgery Unit.</div>
+    </div>
+    <div class="dept-card">
+      <div class="dept-card-header">Psychiatrist</div>
+      <div class="dept-card-body"><img src="question (1).png" alt="Psychiatry"></div>
+      <div class="dept-card-footer">Mental Health Unit.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section class="contact-section">
+  <div class="contact-header">
+    <span class="section-eyebrow">Reach Out</span>
+    <h2 class="section-title" style="color:white;">Get In <em style="color:var(--gold);">Touch</em></h2>
+    <p class="section-sub" style="color:rgba(255,255,255,0.5);">We're always here — whether you have a question, need a visit, or require immediate assistance.</p>
+  </div>
+
+  <div class="cinfo-grid">
+    <a class="cinfo-card" href="https://www.google.com/maps/place/Ek+Noor+Neki+da+Hospital/@30.8145395,75.8647397,17z" target="_blank">
+      <div class="cinfo-icon-wrap"><iframe src="https://lottie.host/embed/42de490e-d094-409a-874d-bb796ecfb749/tR2O5tKCXu.lottie" title="Location animation"></iframe></div>
+      <div class="cinfo-label">Location</div>
+      <div class="cinfo-value">Gurudwara Alamgir Sahib,<br>Malerkotla Road,<br>Ludhiana, Punjab</div>
+    </a>
+    <a class="cinfo-card" href="https://wa.me/919876413100" target="_blank">
+      <div class="cinfo-icon-wrap"><iframe src="https://lottie.host/embed/32c3c588-0b9a-41cc-a0a7-162c983e8ba7/fMRNQILXPe.lottie" title="Phone animation"></iframe></div>
+      <div class="cinfo-label">Call / WhatsApp</div>
+      <div class="cinfo-value"><strong>+91 98764 13100</strong>Available 24/7 for emergencies</div>
+    </a>
+    <a class="cinfo-card" href="https://mail.google.com/mail/u/0/#search/eknoorsewakendra%40yahoo.com">
+      <div class="cinfo-icon-wrap"><iframe src="https://lottie.host/embed/8582bd4d-1665-433e-96fe-e1c6ace7d817/DpcaMuJtmA.lottie" title="Email animation"></iframe></div>
+      <div class="cinfo-label">Email Us</div>
+      <div class="cinfo-value">eknoorsewakendra<br>@yahoo.com</div>
+    </a>
+    <div class="cinfo-card" style="cursor:default;">
+      <div class="cinfo-icon-wrap"><iframe src="https://lottie.host/embed/7c0c81f2-db38-4f3f-a47e-66c3e3ca8f9c/cVr4BwhIiS.lottie" title="Emergency animation"></iframe></div>
+      <div class="cinfo-label">Emergency</div>
+      <div class="cinfo-value"><strong style="color:#4ade80;">Always Open</strong>Ambulance dispatch round the clock</div>
+    </div>
+  </div>
+
+  <div class="cinfo-hours">
+    <div class="cinfo-hours-icon">🕐</div>
+    <div class="cinfo-hours-label">Working Hours</div>
+    <div class="cinfo-hours-slots">
+      <div class="cinfo-slot">Monday – Saturday<span>8:00 AM – 8:00 PM</span></div>
+      <div class="cinfo-slot">Sunday<span>9:00 AM – 2:00 PM</span></div>
+      <div class="cinfo-slot">Emergency &amp; OPD<span>24/7 — Always open</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <span class="footer-brand-name">Ek Noor Neki da Charitable Hospital</span>
+      <div class="footer-gold-line"></div>
+      <p class="footer-desc">Dedicated to compassionate healthcare and community service. We strive to provide affordable and quality medical care with dignity and respect for all.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Information</h4>
+      <ul>
+        <li>
+          <strong style="color:rgba(255,255,255,0.5); font-weight:600; font-size:11px; letter-spacing:1px; text-transform:uppercase;">Address</strong><br>
+          <a href="https://www.google.com/maps/place/Ek+Noor+Neki+da+Hospital/@30.8145395,75.8647397,17z">
+            Gurudwara Alamgir Sahib,<br>Malerkotla Road, Ludhiana, Punjab
+          </a>
+        </li>
+        <li><strong style="color:rgba(255,255,255,0.5); font-weight:600; font-size:11px; letter-spacing:1px; text-transform:uppercase;">Phone</strong><br><a href="https://wa.me/919876413100">+91 98764 13100</a></li>
+        <li><strong style="color:rgba(255,255,255,0.5); font-weight:600; font-size:11px; letter-spacing:1px; text-transform:uppercase;">Email</strong><br><a href="https://mail.google.com/mail/u/0/#search/eknoorsewakendra%40yahoo.com">eknoorsewakendra@yahoo.com</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="doctors.html">Our Doctors</a></li>
+        <li><a href="patient.html">Patient Portal</a></li>
+        <li><a href="services.html">Departments</a></li>
+        <li><a href="contact (5).html">Contact Us</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Ek Noor Neki da Charitable Hospital · All Rights Reserved
+  </div>
+</footer>
+
+<!-- ═══════════════ APPOINTMENT MODAL ═══════════════ -->
+<div class="modal-overlay" id="id01">
+  <div class="modal-box">
+    <div class="modal-header-strip">
+      <div class="modal-eyebrow">Ek Noor Neki Da Hospital</div>
+      <h2 class="modal-title">Book an Appointment</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="formView">
+        <form id="appointmentForm">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" placeholder="Your full name" required/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" name="phone" id="phoneInput" placeholder="10-digit number" required/>
+              <div class="field-hint">Numbers only, 10 digits</div>
+            </div>
+            <div class="form-group">
+              <label>Email <span class="optional-tag">(optional)</span></label>
+              <input type="email" name="email" placeholder="you@example.com"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Department</label>
+              <select name="department" required>
+                <option value="">Choose Department</option>
+                <option>Cardiology</option>
+                <option>Orthopedic</option>
+                <option>Neurology</option>
+                <option>Pediatrics</option>
+                <option>General Surgery</option>
+                <option>OB-GYN</option>
+                <option>Urology</option>
+                <option>Ophthalmology</option>
+                <option>Neurosurgery</option>
+                <option>Psychiatry</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Preferred Doctor <span class="optional-tag">(optional)</span></label>
+              <select name="doctor">
+                <option value="">Any Doctor</option>
+                <option>Dr. Sharma</option>
+                <option>Dr. Singh</option>
+                <option>Dr. Kaur</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Preferred Date</label>
+            <input type="date" name="date" id="dateInput" required/>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-submit" id="submitBtn">Confirm Booking</button>
+            <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div class="success-msg" id="successMsg">
+        <div class="success-checkmark">✅</div>
+        <h3>Appointment Booked!</h3>
+        <p>Thank you! We'll confirm your appointment shortly via phone or email.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ AI CHAT BUTTON ═══════════════ -->
+<div id="ai-float-btn" onclick="openAIChatModal()">
+  <div id="ai-float-bubble">Happy to Assist! 🤖</div>
+  <div id="ai-float-circle">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    </svg>
+  </div>
+</div>
+
+<div id="ai-modal-overlay" onclick="closeAIChatModal(event)">
+  <div id="ai-modal-box">
+    <button id="ai-close-btn" onclick="forceCloseAIChat()">✕</button>
+    <iframe src="assistant.html" id="ai-iframe"></iframe>
+  </div>
+</div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+  // Nav toggle
+  window.toggleNavMenu = function() {
+    document.getElementById('navMenu').classList.toggle('open');
+  };
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.navbar-custom')) {
+      document.getElementById('navMenu').classList.remove('open');
+    }
+  });
+
+   document.getElementById('dateInput').min = new Date().toISOString().split('T')[0];
+
+  // Typewriter
+  (function() {
+    const words = ['CARE FOR LIFE', 'HEAL WITH HOPE', 'TRUST OUR CARE', 'EMBRACE BETTER HEALTH', 'LIVE HEALTHIER', 'WE WILL TAKE CARE OF YOU', 'FEEL BETTER'];
+    const el = document.getElementById('heroText');
+    let i = 0;
+    el.textContent = words[0];
+    el.style.opacity = '1';
+    setInterval(function() {
+      el.classList.add('fade');
+      setTimeout(function() {
+        i = (i + 1) % words.length;
+        el.textContent = words[i];
+        el.classList.remove('fade');
+      }, 400);
+    }, 3000);
+  })();
+
+  // Phone validation
+  document.getElementById('phoneInput').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  // Helper: Check if user can access private features
+  function checkLogin() {
+    try {
+      const user = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      if (!user || !user.role) {
+        alert('Please login to use this feature.');
+        window.location.href = 'login1.html';
+        return false;
+      }
+      if (user.role !== 'admin' && user.role !== 'doctor' && user.role !== 'patient') {
+        alert('Access denied. Only admins, doctors, and patients may use this feature.');
+        return false;
+      }
+      return true;
+    } catch(e) {
+      alert('Please login to use this feature.');
+      window.location.href = 'login1.html';
+      return false;
+    }
+  }
+
+  // Modal
+  function openModal() {
+    window.location.href = 'assistant.html';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.setTimeout(function() {
+      document.getElementById('id01').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }, 500);
+    window.location.href = '#id01';
+    if (!checkLogin()) return;
+    document.getElementById('formView').style.display  = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('id01').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('id01').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('id01')) closeModal();
+  });
+
+  // Appointment form
+  document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const full_name  = this.elements['full_name'].value.trim();
+    const phone      = this.elements['phone'].value.trim();
+    const email      = this.elements['email'].value.trim();
+    const department = this.elements['department'].value;
+    const doctor     = this.elements['doctor'].value;
+    const date       = this.elements['date'].value;
+    if (!full_name || !phone || !department || !date) { alert('Please fill all required fields.'); return; }
+    if (!/^[0-9]{10}$/.test(phone)) { alert('Please enter a valid 10-digit phone number.'); return; }
+    const data = { full_name, phone, email, department, doctor, date };
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Booking…';
+    const LS_APPOINTMENTS = 'eknoor_appointments';
+    function localGetAppointments() { return JSON.parse(localStorage.getItem(LS_APPOINTMENTS) || '[]'); }
+    function localSaveAppointments(list) { localStorage.setItem(LS_APPOINTMENTS, JSON.stringify(list)); }
+    function showBookingSuccess() {
+      document.getElementById('formView').style.display   = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+      document.getElementById('appointmentForm').reset();
+      setTimeout(function() {
+        closeModal();
+        document.getElementById('formView').style.display   = 'block';
+        document.getElementById('successMsg').style.display = 'none';
+      }, 3500);
+    }
+    let booked = false;
+    try {
+      const response = await fetch('http://localhost:5002/book-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        signal: AbortSignal.timeout(4000)
+      });
+      const result = await response.json();
+      if (result.success) {
+        const list = localGetAppointments();
+        list.push({ ...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString() });
+        localSaveAppointments(list);
+        booked = true;
+      } else {
+        alert('Server error: ' + (result.message || result.error || 'Unknown error.'));
+      }
+    } catch (error) {
+      const list = localGetAppointments();
+      list.push({ ...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString() });
+      localSaveAppointments(list);
+      booked = true;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirm Booking';
+    }
+    if (booked) showBookingSuccess();
+  });
+
+  // AI Chat
+  function openAIChatModal() {
+    if (!checkLogin()) return;
+    document.getElementById('ai-modal-overlay').classList.add('ai-active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeAIChatModal(e) {
+    if (e.target === document.getElementById('ai-modal-overlay')) forceCloseAIChat();
+  }
+  function forceCloseAIChat() {
+    document.getElementById('ai-modal-overlay').classList.remove('ai-active');
+    document.body.style.overflow = '';
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  ACCESS CONTROL: Visitors/Patients restricted to home page
+  // ════════════════════════════════════════════════════════
+  function checkAccessControl() {
+    try {
+      var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      
+      // If no user logged in, allow full access to public pages
+      if (!u || !u.role) return true;
+      
+      // Doctors always go to their dashboard
+      if (u.role === 'doctor') {
+        window.location.replace('doctor_dashboard (1).html');
+        return false;
+      }
+      
+      // Admins have full access
+      if (u.role === 'admin') return true;
+      
+      // Patients can only access home page and patient.html
+      if (u.role === 'patient') {
+        // Get current page name
+        var currentPage = window.location.pathname.split('/').pop() || 'home (1).html';
+        var allowedPages = ['home (1).html', 'home (1).html', 'patient.html', 'doctors.html', 'services.html', 'about.html', 'videos.html', 'contact (5).html', 'assistant.html'];
+        
+        // Check if current page is allowed
+        var isAllowed = allowedPages.some(function(page) {
+          return currentPage.includes(page) || currentPage === '';
+        });
+        
+        // If trying to access unauthorized page, redirect to home
+        if (!isAllowed) {
+          window.location.replace('home (1).html');
+          return false;
+        }
+        return true;
+      }
+    } catch(e) {
+      return true;
+    }
+  }
+  
+  // Access control: only block patients from admin/doctor dashboards
+  // Home page is public — no redirect needed here
+
+  // Role-based session handling
+  (function() {
+    // Mobile toggle
+    window.toggleNavMenu = function() {
+      document.getElementById('navMenu').classList.toggle('open');
+    };
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.navbar-custom')) {
+        document.getElementById('navMenu').classList.remove('open');
+      }
+    });
+
+    try {
+      var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      var btn = document.getElementById('navLoginBtn');
+      var loginItem = document.getElementById('navLoginItem');
+      var userItem = document.getElementById('navUserItem');
+      var userIdEl = document.getElementById('navUserId');
+      var logoutItem = document.getElementById('navLogoutItem');
+      var logoutBtn = document.getElementById('navLogoutBtn');
+
+      function showNavUser(label) {
+        if (loginItem) loginItem.style.display = 'none';
+        if (btn) btn.style.display = 'none';
+        if (userItem) { userItem.style.display = 'inline-block'; }
+        if (logoutItem) logoutItem.style.display = 'inline-block';
+        if (userIdEl) userIdEl.textContent = label;
+        if (logoutBtn) {
+          logoutBtn.onclick = function(e) { e.preventDefault(); doLogout(); };
+        }
+      }
+
+      if (u && u.role === 'admin') {
+        document.getElementById('adminBar').style.display = 'flex';
+        document.getElementById('adminBarName').textContent = u.name || u.email || 'Admin';
+        if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard (1).html'; }
+        showNavUser('🛡️ ' + (u.name || 'Admin'));
+
+      } else if (u && u.role === 'doctor') {
+        document.getElementById('doctorBar').style.display = 'flex';
+        document.getElementById('doctorBarName').textContent = u.name || u.email || 'Doctor';
+        if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard (1).html'; }
+        showNavUser('👨‍⚕️ ' + (u.name || 'Doctor'));
+
+      } else if (u && u.role === 'patient') {
+        var patBar = document.getElementById('patientBar');
+        if (patBar) {
+          patBar.style.display = 'flex';
+          var displayName = u.name || (u.email ? u.email.split('@')[0] : 'Patient');
+          var patName = document.getElementById('patientBarName');
+          if (patName) patName.textContent = displayName;
+          var patientIdEl = document.getElementById('patientBarId');
+          if (patientIdEl) patientIdEl.textContent = 'ID: ' + (u.email || displayName);
+        }
+        showNavUser('🏥 ' + (u.name || 'Patient'));
+      }
+    } catch(e) {}
+
+    window.doLogout = function() {
+      localStorage.removeItem('hospital_user');
+      window.location.href = 'login1.html';
+    };
+    window.goToSection = function(sec) {
+      localStorage.setItem('admin_goto_section', sec);
+    };
+  })();
+
+  // ── ANNOUNCEMENTS: read from localStorage (written by admin dashboard) ──
+  (function() {
+    var KEY = 'hospital_announcements';
+    var grid = document.getElementById('annGrid');
+    if (!grid) return;
+
+    function loadAnnouncements() {
+      var items = [];
+      try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) {}
+
+      // Sort newest first
+      items.sort(function(a, b) { return new Date(b.date || b.created_at || 0) - new Date(a.date || a.created_at || 0); });
+
+      // Show max 6 on home page
+      items = items.slice(0, 6);
+
+      if (items.length === 0) {
+        grid.innerHTML = '<div class="ann-empty"><div class="ann-empty-icon">📋</div><p>No announcements yet. Check back soon.</p></div>';
+        return;
+      }
+
+      var tagLabels = { urgent: '🚨 Urgent', info: 'ℹ️ Info', event: '📅 Event', general: '📢 General' };
+      grid.innerHTML = items.map(function(item) {
+        var type = item.type || 'general';
+        var tagLabel = tagLabels[type] || '📢 General';
+        var dateStr = '';
+        if (item.date || item.created_at) {
+          var d = new Date(item.date || item.created_at);
+          dateStr = '📅 ' + d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+        }
+        return '<div class="ann-card ' + type + '">' +
+          '<span class="ann-tag ' + type + '">' + tagLabel + '</span>' +
+          '<div class="ann-title">' + (item.title || 'Announcement') + '</div>' +
+          '<div class="ann-body">' + (item.message || item.body || item.content || '') + '</div>' +
+          (dateStr ? '<div class="ann-date">' + dateStr + '</div>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    loadAnnouncements();
+
+    // Re-render if admin updates localStorage in another tab
+    window.addEventListener('storage', function(e) {
+      if (e.key === KEY) loadAnnouncements();
+    });
+  })();
+
+</script>
+</body>
+</html>

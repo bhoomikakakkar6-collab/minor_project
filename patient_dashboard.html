@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0d1f5c; --blue: #1a3bb5; --accent: #4f8ef7;
+      --sky: #e8f0fe; --shadow: 0 8px 32px rgba(13,31,92,0.12);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #f0f4ff; min-height: 100vh; }
+
+    /* STATUS BANNER */
+    #status-bar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 7px 20px; font-size: 13px; font-weight: 500;
+    }
+    #status-bar.online  { background: #dcfce7; color: #166534; }
+    #status-bar.offline { background: #fef9c3; color: #854d0e; }
+    #status-bar.checking{ background: #f0f4ff; color: #4f6096; }
+    .sdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .online  .sdot { background:#22c55e; animation:gpulse 1.5s infinite; }
+    .offline .sdot { background:#f59e0b; }
+    .checking .sdot{ background:#94a3b8; }
+
+    /* TOPBAR */
+    .topbar {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      padding: 18px 36px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-left h1 { font-family:'Playfair Display',serif; font-size:22px; color:white; font-weight:700; }
+    .topbar-left p  { font-size:13px; color:rgba(255,255,255,0.6); margin-top:2px; }
+    .topbar-right { display:flex; gap:10px; align-items:center; }
+    .topbar-right a, .topbar-right button {
+      background: rgba(255,255,255,0.15); color: white;
+      text-decoration: none; padding: 9px 20px; border-radius: 50px;
+      font-size: 13px; font-weight: 500; transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.25); cursor:pointer; font-family:'DM Sans',sans-serif;
+    }
+    .topbar-right a:hover, .topbar-right button:hover { background: rgba(255,255,255,0.25); }
+
+    /* DATA SOURCE BADGE */
+    #data-source-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.5px;
+    }
+    .badge-db    { background:rgba(34,197,94,0.2);  color:#86efac; }
+    .badge-local { background:rgba(251,191,36,0.2); color:#fde68a; }
+
+    /* STATS */
+    .stats-wrap { max-width:1100px; margin:36px auto 24px; padding:0 24px; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+    .stat-card {
+      background:white; border-radius:16px; padding:22px 24px;
+      box-shadow:var(--shadow); display:flex; flex-direction:column; gap:6px;
+    }
+    .stat-label { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#8892b0; font-weight:600; }
+    .stat-value { font-size:32px; font-weight:700; color:var(--navy); font-family:'Playfair Display',serif; }
+    .stat-sub   { font-size:13px; color:#6b7a99; }
+
+    /* TABLE */
+    .table-wrap { max-width:1100px; margin:0 auto 60px; padding:0 24px; }
+    .table-box  { background:white; border-radius:20px; box-shadow:var(--shadow); overflow:hidden; }
+    .table-top {
+      padding:24px 28px; display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:14px; border-bottom:1px solid #eef0f8;
+    }
+    .table-top h2 { font-family:'Playfair Display',serif; font-size:20px; color:var(--navy); font-weight:700; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; }
+    .search-input {
+      padding:10px 16px; border:1.5px solid #dde4f5; border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:14px; color:#1a2340;
+      background:#f8faff; outline:none; width:220px; transition:all 0.2s;
+    }
+    .search-input:focus { border-color:var(--accent); background:white; box-shadow:0 0 0 3px rgba(79,142,247,0.1); }
+    .filter-select {
+      padding:10px 14px; border:1.5px solid #dde4f5; border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:14px; color:#1a2340;
+      background:#f8faff; outline:none; appearance:none; cursor:pointer; transition:all 0.2s;
+    }
+    .filter-select:focus { border-color:var(--accent); }
+    .refresh-btn {
+      padding:10px 18px; background:var(--sky); color:var(--navy);
+      border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+      font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s;
+    }
+    .refresh-btn:hover { background:#d1e3fe; }
+
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:700px; }
+    thead tr { background:#f8faff; }
+    thead th {
+      padding:14px 20px; text-align:left; font-size:11px; letter-spacing:1.5px;
+      text-transform:uppercase; color:#8892b0; font-weight:600;
+      border-bottom:1px solid #eef0f8; white-space:nowrap;
+    }
+    tbody tr { border-bottom:1px solid #f0f4ff; transition:background 0.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:#f8faff; }
+    tbody td { padding:16px 20px; font-size:14px; color:#1a2340; vertical-align:middle; }
+
+    .id-badge { background:var(--sky); color:var(--blue); font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; font-family:monospace; letter-spacing:0.5px; }
+    .name-cell { font-weight:600; color:var(--navy); }
+    .gender-pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+    .gender-male   { background:#e0f2fe; color:#0369a1; }
+    .gender-female { background:#fce7f3; color:#9d174d; }
+    .gender-other  { background:#f3e8ff; color:#6b21a8; }
+    .status-badge { display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#166534; font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px; }
+    .green-dot { width:7px; height:7px; border-radius:50%; background:#22c55e; animation:gpulse 1.5s infinite; flex-shrink:0; }
+    @keyframes gpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+    .condition-tag { background:#fff7ed; color:#9a3412; font-size:12px; padding:3px 10px; border-radius:6px; }
+    .no-condition  { color:#b0bac9; font-size:13px; }
+    .local-tag     { background:#fef9c3; color:#854d0e; font-size:11px; padding:2px 8px; border-radius:10px; margin-left:6px; font-weight:600; }
+
+    .empty-state { text-align:center; padding:60px 20px; }
+    .empty-state .empty-icon { font-size:48px; margin-bottom:16px; opacity:0.4; }
+    .empty-state h3 { font-family:'Playfair Display',serif; color:var(--navy); font-size:20px; margin-bottom:8px; }
+    .empty-state p  { color:#8892b0; font-size:14px; }
+    .loading { text-align:center; padding:60px 20px; color:#8892b0; font-size:14px; }
+    .spinner { width:36px; height:36px; border:3px solid #dde4f5; border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    .table-footer {
+      padding:16px 28px; border-top:1px solid #eef0f8;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    }
+    .table-footer span { font-size:13px; color:#8892b0; }
+
+    @media (max-width:600px) {
+      .topbar { padding:16px 20px; }
+      .topbar-left h1 { font-size:18px; }
+      .stats-wrap, .table-wrap { padding:0 14px; }
+      .search-input { width:100%; }
+      .controls { width:100%; }
+      .topbar-right { flex-wrap:wrap; gap:6px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STATUS BANNER -->
+<div id="status-bar" class="checking">
+  <span class="sdot"></span>
+  <span id="status-text">Checking server...</span>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>Patient Records</h1>
+    <p>All registered patients — Ek Noor Neki Da Hospital</p>
+  </div>
+  <div class="topbar-right">
+    <span id="data-source-badge" class="badge-local">📦 Local Data</span>
+    <a href="patient.html">&#8592; Back to Portal</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-wrap">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Patients</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">Registered members</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Male</div>
+      <div class="stat-value" id="statMale">—</div>
+      <div class="stat-sub">Male patients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Female</div>
+      <div class="stat-value" id="statFemale">—</div>
+      <div class="stat-sub">Female patients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Today</div>
+      <div class="stat-value" id="statToday">—</div>
+      <div class="stat-sub">Registered today</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="table-box">
+    <div class="table-top">
+      <h2>All Patients</h2>
+      <div class="controls">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name..." oninput="filterTable()"/>
+        <select class="filter-select" id="genderFilter" onchange="filterTable()">
+          <option value="">All Genders</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+        <button class="refresh-btn" onclick="loadPatients()">&#8635; Refresh</button>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table id="patientTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Relation</th>
+            <th>Condition</th>
+            <th>Registered On</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="9">
+            <div class="loading"><div class="spinner"></div>Loading patients...</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span id="footerCount">Loading...</span>
+      <span id="footerTime"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
+const SERVER       = 'http://localhost:5002';
+const LS_PATIENTS  = 'eknoor_patients';   // must match patient.html key
+let   allPatients  = [];
+let   serverOnline = false;
+
+// ═══════════════════════════════════════════════
+//  SERVER CHECK + LOAD ON START
+// ═══════════════════════════════════════════════
+async function checkServerAndLoad() {
+  const bar  = document.getElementById('status-bar');
+  const text = document.getElementById('status-text');
+
+  try {
+    const res = await fetch(SERVER + '/get-patient?name=__ping__', {
+      signal: AbortSignal.timeout(3000)
+    });
+    if (res.ok) {
+      serverOnline = true;
+      bar.className  = 'online';
+      text.textContent = '✓ Server connected — showing live database records';
+      setBadge(true);
+    } else { throw new Error(); }
+  } catch {
+    serverOnline = false;
+    bar.className  = 'offline';
+    text.textContent = '⚠ Server offline — showing locally saved data. Run: python app.py for live database.';
+    setBadge(false);
+  }
+
+  loadPatients();
+}
+
+function setBadge(online) {
+  const badge = document.getElementById('data-source-badge');
+  if (online) {
+    badge.textContent  = '🗄️ Live Database';
+    badge.className    = 'badge-db';
+  } else {
+    badge.textContent  = '📦 Local Browser Data';
+    badge.className    = 'badge-local';
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  LOCAL STORAGE HELPER
+// ═══════════════════════════════════════════════
+function localGetPatients() {
+  return JSON.parse(localStorage.getItem(LS_PATIENTS) || '[]');
+}
+
+// ═══════════════════════════════════════════════
+//  LOAD PATIENTS
+//  Tries Flask → falls back to localStorage
+// ═══════════════════════════════════════════════
+async function loadPatients() {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '<tr><td colspan="9"><div class="loading"><div class="spinner"></div>Loading patients...</div></td></tr>';
+
+  if (serverOnline) {
+    try {
+      const res  = await fetch(SERVER + '/get-all-patients?_=' + Date.now());
+      const data = await res.json();
+
+      // Merge DB data with any local-only entries not yet in DB
+      const localOnly = localGetPatients().filter(lp =>
+        !data.find(dp => dp.name.toLowerCase() === lp.name.toLowerCase() && dp.phone === lp.phone)
+      );
+      allPatients = [...data, ...localOnly];
+
+      updateStats(allPatients);
+      renderTable(allPatients);
+      setFooterTime();
+      return;
+    } catch { /* fall through */ }
+  }
+
+  // Offline: use localStorage
+  allPatients = localGetPatients();
+  updateStats(allPatients);
+  renderTable(allPatients);
+  setFooterTime();
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER TABLE
+// ═══════════════════════════════════════════════
+function renderTable(patients) {
+  const body = document.getElementById('tableBody');
+
+  if (patients.length === 0) {
+    body.innerHTML = `
+      <tr><td colspan="9">
+        <div class="empty-state">
+          <div class="empty-icon">&#128203;</div>
+          <h3>No patients found</h3>
+          <p>${allPatients.length === 0
+            ? 'No patients registered yet. Go to the Patient Portal to register.'
+            : 'No patients match your search or filter.'}</p>
+        </div>
+      </td></tr>`;
+    document.getElementById('footerCount').textContent = '0 patients';
+    return;
+  }
+
+  body.innerHTML = patients.map((p, idx) => {
+    // Handle both DB records (have created_at) and localStorage records
+    let dateStr = '—';
+    if (p.created_at) {
+      try {
+        dateStr = new Date(p.created_at).toLocaleDateString('en-IN', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+      } catch { dateStr = '—'; }
+    }
+
+    const genderClass = p.gender === 'Male' ? 'gender-male'
+                      : p.gender === 'Female' ? 'gender-female'
+                      : 'gender-other';
+
+    const condition = p.condition
+      ? `<span class="condition-tag">${p.condition}</span>`
+      : `<span class="no-condition">—</span>`;
+
+    // Show a LOCAL tag for entries that only exist in browser storage
+    const localTag = (!serverOnline || !p.id || typeof p.id === 'number' && p.id > 1700000000000)
+      ? '' : '';
+    const displayId = p.id
+      ? (typeof p.id === 'number' && p.id > 1700000000000
+          ? `<span class="id-badge">LOCAL</span>`          // localStorage entry (timestamp id)
+          : `<span class="id-badge">#${String(p.id).padStart(4,'0')}</span>`) // DB entry
+      : `<span class="id-badge">#${String(idx+1).padStart(4,'0')}</span>`;
+
+    return `
+      <tr>
+        <td>${displayId}</td>
+        <td><span class="name-cell">${p.name}</span></td>
+        <td>${p.phone}</td>
+        <td>${p.age} yrs</td>
+        <td><span class="gender-pill ${genderClass}">${p.gender}</span></td>
+        <td>${p.relation}</td>
+        <td>${condition}</td>
+        <td>${dateStr}</td>
+        <td><span class="status-badge"><span class="green-dot"></span>Registered</span></td>
+      </tr>`;
+  }).join('');
+
+  document.getElementById('footerCount').textContent =
+    `Showing ${patients.length} of ${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''}`;
+}
+
+// ═══════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════
+function updateStats(patients) {
+  const today = new Date().toDateString();
+  document.getElementById('statTotal').textContent  = patients.length;
+  document.getElementById('statMale').textContent   = patients.filter(p => p.gender === 'Male').length;
+  document.getElementById('statFemale').textContent = patients.filter(p => p.gender === 'Female').length;
+  document.getElementById('statToday').textContent  = patients.filter(p => {
+    try { return new Date(p.created_at).toDateString() === today; } catch { return false; }
+  }).length;
+}
+
+function setFooterTime() {
+  document.getElementById('footerTime').textContent =
+    'Last updated: ' + new Date().toLocaleTimeString('en-IN');
+}
+
+// ═══════════════════════════════════════════════
+//  FILTER
+// ═══════════════════════════════════════════════
+function filterTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const gender = document.getElementById('genderFilter').value;
+  const filtered = allPatients.filter(p => {
+    const matchName   = p.name.toLowerCase().includes(search);
+    const matchGender = gender ? p.gender === gender : true;
+    return matchName && matchGender;
+  });
+  renderTable(filtered);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+checkServerAndLoad();
+</script>
+</body>
+</html>

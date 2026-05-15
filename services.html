@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+// ── AUTH GUARD ──
+(function() {
+  try {
+    var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+    var page = location.pathname.split('/').pop() || 'home__1_.html';
+    var DASHBOARD_PAGES = ['admin_dashboard__1_.html','doctor_dashboard__1_.html'];
+    if (!u || !u.role) {
+      if (page !== 'login1.html') window.location.replace('login1.html');
+      return;
+    }
+    if (u.role === 'patient' && DASHBOARD_PAGES.indexOf(page) !== -1) {
+      window.location.replace('home__1_.html');
+    }
+  } catch(e) {
+    window.location.replace('login1.html');
+  }
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.jpg" type="image">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>Our Services – Ek Noor Neki Da Hospital</title>
+
+<style>
+:root {
+  --navy:  #0d1f5c;
+  --blue:  #1a3bb5;
+  --accent:#4f8ef7;
+  --sky:   #e8f0fe;
+  --white: #ffffff;
+  --shadow:0 8px 32px rgba(13,31,92,0.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #f4f7ff; }
+
+/* ── NAVBAR ── */
+to   { background-color: rgba(15,40,165,0.97); }
+}
+.left { display: flex; align-items: center; }
+/* ── HERO BANNER ── */
+.page-hero {
+  background: linear-gradient(135deg, #0d1f5c 0%, #1a3bb5 60%, #4f8ef7 100%);
+  padding: 90px 24px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.page-hero::after {
+  content: '';
+  position: absolute; bottom: -80px; left: -40px;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.page-hero .eyebrow {
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.65); font-weight: 500; margin-bottom: 14px;
+}
+.page-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px; font-weight: 700; color: white; line-height: 1.15;
+  margin-bottom: 18px;
+}
+.page-hero p {
+  max-width: 580px; margin: 0 auto 32px;
+  font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.75;
+}
+.hero-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 50px;
+  background: white; color: var(--navy);
+  font-size: 14px; font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  font-family: 'DM Sans', sans-serif;
+}
+.hero-btn:hover {
+  background: var(--sky); color: var(--navy);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+/* ── SECTION LABELS ── */
+.section-label {
+  text-align: center; font-size: 12px; letter-spacing: 3px;
+  text-transform: uppercase; color: #8892b0; font-weight: 500; margin: 60px 0 8px;
+}
+.section-title {
+  text-align: center; font-family: 'Playfair Display', serif;
+  font-size: 34px; color: var(--navy); margin-bottom: 10px; font-weight: 700;
+}
+.section-sub {
+  text-align: center; color: #6b7a99; font-size: 15px;
+  max-width: 580px; margin: 0 auto 44px; line-height: 1.7;
+}
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  background: var(--navy);
+  padding: 40px 24px;
+}
+.stat-item { text-align: center; }
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px; font-weight: 700; color: white; line-height: 1;
+}
+.stat-number span { color: #4f8ef7; }
+.stat-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 6px; letter-spacing: 0.5px; }
+.stat-divider { width: 1px; background: rgba(255,255,255,0.12); margin: 0 auto; height: 60px; }
+
+/* ── SERVICE CARDS (large) ── */
+.svc-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(13,31,92,0.09);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+.svc-card:hover { transform: translateY(-6px); box-shadow: 0 20px 44px rgba(13,31,92,0.18); }
+.svc-card-header {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  padding: 28px 28px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.svc-card-header::after {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.svc-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: rgba(255,255,255,0.14);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 14px;
+}
+.svc-card-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: white; font-weight: 700; margin: 0;
+}
+.svc-card-body { padding: 24px 28px 28px; }
+.svc-card-body p { font-size: 14px; color: #5a6a8a; line-height: 1.75; margin-bottom: 18px; }
+.svc-tag {
+  display: inline-block; padding: 5px 12px;
+  background: var(--sky); color: var(--blue);
+  border-radius: 50px; font-size: 12px; font-weight: 600;
+  margin: 3px 3px 3px 0;
+}
+.svc-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 18px; font-size: 13px; font-weight: 600;
+  color: var(--blue); text-decoration: none; transition: gap 0.2s;
+}
+.svc-link:hover { gap: 10px; color: var(--navy); }
+
+/* ── FEATURED DARK CARD ── */
+.svc-card.dark-card .svc-card-header {
+  background: linear-gradient(135deg, #061240, #0d1f5c);
+}
+
+/* ── HIGHLIGHT STRIP ── */
+.highlight-strip {
+  background: linear-gradient(135deg, #1a3bb5, #4f8ef7);
+  border-radius: 24px;
+  padding: 56px 48px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.highlight-strip::before {
+  content: ''; position: absolute; top: -50px; right: -50px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.highlight-strip h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px; font-weight: 700; margin-bottom: 14px;
+}
+.highlight-strip p { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.75; margin-bottom: 28px; }
+.hl-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 50px;
+  background: white; color: var(--navy);
+  font-size: 14px; font-weight: 600;
+  text-decoration: none; font-family: 'DM Sans', sans-serif;
+  transition: all 0.25s ease;
+}
+.hl-btn:hover { background: #dce8ff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); color: var(--navy); }
+.hl-check { list-style: none; padding: 0; margin-bottom: 28px; }
+.hl-check li { font-size: 14px; color: rgba(255,255,255,0.85); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.hl-check li::before { content: '✓'; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+/* ── PROCESS STEPS ── */
+.step-card {
+  background: white; border-radius: 16px;
+  padding: 28px 24px; text-align: center;
+  box-shadow: 0 4px 20px rgba(13,31,92,0.08);
+  position: relative; height: 100%;
+  transition: all 0.3s ease;
+}
+.step-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(13,31,92,0.15); }
+.step-num {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: white; font-weight: 700; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-family: 'Playfair Display', serif;
+}
+.step-card h5 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--navy); margin-bottom: 10px; }
+.step-card p { font-size: 13px; color: #6b7a99; line-height: 1.7; margin: 0; }
+
+/* ── DEPARTMENTS PILLS ── */
+.dept-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: white; border-radius: 50px;
+  padding: 12px 22px;
+  box-shadow: 0 4px 16px rgba(13,31,92,0.1);
+  font-size: 14px; font-weight: 500; color: var(--navy);
+  margin: 6px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+.dept-pill:hover { background: var(--navy); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13,31,92,0.22); }
+.dept-pill .dp-icon { font-size: 18px; }
+
+/* ── TESTIMONIAL ── */
+.testi-card {
+  background: white; border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 4px 20px rgba(13,31,92,0.09);
+  height: 100%;
+}
+.testi-stars { color: #f59e0b; font-size: 16px; margin-bottom: 14px; }
+.testi-text { font-size: 14px; color: #4a5a7a; line-height: 1.8; margin-bottom: 20px; font-style: italic; }
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 16px;
+}
+.testi-name { font-weight: 600; color: var(--navy); font-size: 14px; }
+.testi-role { font-size: 12px; color: #8892b0; }
+
+/* ── CTA BAND ── */
+.cta-band {
+  background: var(--navy); padding: 64px 24px; text-align: center;
+}
+.cta-band h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; color: white; margin-bottom: 12px;
+}
+.cta-band p { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 32px; }
+.cta-band .btn-light-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 50px;
+  background: transparent; color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  font-size: 14px; font-weight: 600;
+  text-decoration: none; font-family: 'DM Sans', sans-serif;
+  transition: all 0.25s ease; margin: 6px;
+}
+.cta-band .btn-light-outline:hover { background: rgba(255,255,255,0.1); border-color: white; color: white; }
+.cta-band .btn-filled {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 50px;
+  background: white; color: var(--navy);
+  border: 2px solid white;
+  font-size: 14px; font-weight: 600;
+  text-decoration: none; font-family: 'DM Sans', sans-serif;
+  transition: all 0.25s ease; margin: 6px;
+}
+.cta-band .btn-filled:hover { background: var(--sky); border-color: var(--sky); color: var(--navy); transform: translateY(-2px); }
+
+/* ── PULSE ── */
+.pulse-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: #4ade80; margin-right: 5px;
+  animation: pulse 1.5s infinite; vertical-align: middle;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+/* ── FOOTER ── */
+.hospital-footer {
+  background: #07122a; color: #cdd5e8;
+  padding: 56px 28px 24px; font-size: 14.5px;
+}
+.footer-container {
+  max-width: 1100px; margin: auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 36px;
+}
+.footer-box h3, .footer-box h4 { color: #fff; margin-bottom: 14px; font-weight: 600; font-family: 'Playfair Display', serif; }
+.footer-box p  { line-height: 1.8; color: #9aa4be; }
+.footer-box ul { list-style: none; padding: 0; }
+.footer-box ul li { margin-bottom: 10px; line-height: 1.7; color: #9aa4be; }
+.footer-box a  { color: #7eb8f7; text-decoration: none; transition: color 0.2s; }
+.footer-box a:hover { color: white; }
+.footer-bottom {
+  max-width: 1100px; margin: 28px auto 0; padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  text-align: center; font-size: 13px; color: #6b7a99;
+}
+
+/* ── FLOATING AI BTN ── */
+#ai-float-btn {
+  position: fixed; bottom: 30px; right: 30px; z-index: 999999;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+}
+#ai-float-bubble {
+  background: white; color: var(--navy); font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; box-shadow: 0 4px 16px rgba(13,31,92,0.2);
+  white-space: nowrap; opacity: 0; transform: translateY(6px);
+  transition: all 0.3s ease; pointer-events: none;
+}
+#ai-float-btn:hover #ai-float-bubble { opacity: 1; transform: translateY(0); }
+#ai-float-circle {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(13,31,92,0.35);
+  transition: transform 0.2s;
+}
+#ai-float-btn:hover #ai-float-circle { transform: scale(1.08); }
+#ai-float-circle svg { width: 26px; height: 26px; fill: white; }
+
+/* AI MODAL */
+#ai-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(13,31,92,0.55); z-index: 9999999;
+  align-items: center; justify-content: center;
+}
+#ai-modal-overlay.ai-active { display: flex; }
+#ai-modal-box {
+  width: 90%; max-width: 480px; height: 70vh;
+  background: white; border-radius: 20px;
+  overflow: hidden; position: relative;
+  box-shadow: 0 24px 60px rgba(13,31,92,0.35);
+}
+#ai-close-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: #f0f4ff; border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer;
+  font-size: 15px; color: #7a8ab0; z-index: 10;
+  transition: all 0.2s;
+}
+#ai-close-btn:hover { background: #e0e8ff; color: var(--navy); transform: rotate(90deg); }
+#ai-iframe { width: 100%; height: 100%; border: none; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .menu.active { display: flex; }
+  .page-hero h1 { font-size: 34px; }
+  .stat-divider { display: none; }
+  .highlight-strip { padding: 36px 28px; }
+  .highlight-strip h2 { font-size: 26px; }
+  .cta-band h2 { font-size: 26px; }
+  .section-title { font-size: 26px; }
+}
+
+/* ════════════════════════════════
+   UNIFIED NAVBAR  –  Ek Noor Neki Da
+   ════════════════════════════════ */
+:root {
+  --navy: #0d1f5c;
+  --blue: #1a3bb5;
+  --accent: #4f8ef7;
+  --sky: #e8f0fe;
+}
+
+@keyframes navAnim {
+  from { background: rgba(13,31,92,0.97); }
+  to   { background: rgba(26,59,181,0.97); }
+}
+
+.navbar-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 68px;
+  animation: navAnim 5s infinite alternate;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(13,31,92,0.25);
+}
+
+/* Logo */
+.nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+.nav-brand img { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); object-fit: cover; }
+.nav-brand-name {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+.nav-brand-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+}
+
+/* Links */
+.nav-menu { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; align-items: center; }
+.nav-menu li a {
+  text-decoration: none;
+  color: rgba(255,255,255,0.80);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  display: block;
+}
+.nav-menu li a:hover,
+.nav-menu li a.active {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+.nav-menu li a.active { font-weight: 700; }
+
+/* Login button in nav */
+.nav-login-btn {
+  background: rgba(255,255,255,0.18);
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  transition: background 0.2s, border 0.2s !important;
+}
+.nav-login-btn:hover {
+  background: white !important;
+  color: var(--navy) !important;
+  border-color: white !important;
+}
+
+/* Hamburger */
+.menu-toggle {
+  display: none;
+  font-size: 26px;
+  color: white;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+}
+
+/* ── ROLE BAR (shown when admin / doctor logged in) ── */
+.role-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  position: sticky;
+  top: 68px;
+  z-index: 1099;
+  backdrop-filter: blur(8px);
+}
+.role-bar.admin-bar  { background: rgba(109,40,217,0.93); box-shadow: 0 2px 12px rgba(109,40,217,0.35); }
+.role-bar.doctor-bar { background: rgba(5,150,105,0.93);  box-shadow: 0 2px 12px rgba(5,150,105,0.35); }
+
+.role-bar-left { display: flex; align-items: center; gap: 8px; color: white; font-weight: 700; letter-spacing: 0.3px; }
+.role-bar-badge {
+  background: rgba(255,255,255,0.22);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.role-bar-links { display: flex; gap: 4px; }
+.role-bar-links a {
+  color: rgba(255,255,255,0.88);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.role-bar-links a:hover { background: rgba(255,255,255,0.22); color: white; }
+
+.role-bar-logout {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.30);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.3px;
+}
+.role-bar-logout:hover { background: rgba(255,255,255,0.28); }
+
+/* ── MOBILE ── */
+@media (max-width: 820px) {
+  .menu-toggle { display: block; }
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 68px;
+    left: 0; right: 0;
+    background: rgba(13,31,92,0.98);
+    padding: 12px 16px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    gap: 2px;
+  }
+  .nav-menu.open { display: flex; }
+  .nav-menu li a { padding: 11px 16px; border-radius: 8px; font-size: 14px; }
+  .role-bar-links { display: none; }
+  .role-bar { justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ UNIFIED NAVBAR ══ -->
+<nav class="navbar-custom" id="mainNavbar">
+  <a class="nav-brand" href="home__1_.html">
+    <img src="logo.jpg" alt="Ek Noor Logo">
+    <div>
+      <span class="nav-brand-name">Ek Noor Neki Da</span>
+      <span class="nav-brand-sub">Hospital Alamgir</span>
+    </div>
+  </a>
+  <button class="menu-toggle" onclick="toggleNavMenu()" aria-label="Toggle menu">☰</button>
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="home (1).html">Home</a></li>
+    <li><a href="doctors.html">Doctors</a></li>
+    <li><a href="patient.html">Patient</a></li>
+    <li><a href="services.html" class="active">Services</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="videos.html">Videos</a></li>
+    <li><a href="assistant.html">AI Assistant</a></li>
+    <li><a href="contact (5).html">Contact</a></li>
+    <li id="navUserItem" style="display:none;"><a href="#" class="nav-login" id="navUserId"></a></li>
+    <li id="navLogoutItem" style="display:none;"><a href="#" class="nav-login" id="navLogoutBtn">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- ── ADMIN ROLE BAR ── -->
+<div class="role-bar admin-bar" id="adminBar">
+  <div class="role-bar-left">
+    🛡️ &nbsp;<span id="adminBarName">Admin</span>
+    <span class="role-bar-badge">Admin Panel</span>
+  </div>
+  <div class="role-bar-links">
+    <a href="admin_dashboard__1_.html">📊 Dashboard</a>
+    <a href="admin_dashboard__1_.html#appointments">📅 Appointments</a>
+    <a href="admin_dashboard__1_.html#patients">👥 Patients</a>
+    <a href="admin_dashboard__1_.html#doctors">👨‍⚕️ Doctors</a>
+  </div>
+  <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
+</div>
+
+<!-- ── DOCTOR ROLE BAR ── -->
+<div class="role-bar doctor-bar" id="doctorBar">
+  <div class="role-bar-left">
+    👨‍⚕️ &nbsp;<span id="doctorBarName">Doctor</span>
+    <span class="role-bar-badge">Doctor Portal</span>
+  </div>
+  <div class="role-bar-links">
+    <a href="doctor_dashboard__1_.html">🩺 Dashboard</a>
+    <a href="doctor_dashboard__1_.html#appointments">📅 Appointments</a>
+    <a href="patient.html">👥 Patients</a>
+  </div>
+  <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
+</div>
+
+
+
+
+
+<!-- ── HERO ── -->
+<section class="page-hero">
+  <p class="eyebrow" data-aos="fade-down">Ek Noor Neki Da Charitable Hospital</p>
+  <h1 data-aos="fade-up">Our Medical <br>Services</h1>
+  <p data-aos="fade-up" data-aos-delay="80">
+    Compassionate, affordable, and expert healthcare — all under one roof.
+    From routine check-ups to advanced procedures, we are here for every step of your healing journey.
+  </p>
+  <a href="#services" class="hero-btn" data-aos="fade-up" data-aos-delay="160">
+    Explore Services
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+  </a>
+</section>
+
+<!-- ── STATS STRIP ── -->
+<section class="stats-strip">
+  <div class="container">
+    <div class="row align-items-center justify-content-center g-0">
+      <div class="col-6 col-md-3" data-aos="fade-up">
+        <div class="stat-item">
+          <div class="stat-number">15<span>+</span></div>
+          <div class="stat-label">Specialties Available</div>
+        </div>
+      </div>
+      <div class="col-md-1 d-none d-md-flex justify-content-center">
+        <div class="stat-divider"></div>
+      </div>
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="80">
+        <div class="stat-item">
+          <div class="stat-number">24<span>/7</span></div>
+          <div class="stat-label">Emergency & OPD</div>
+        </div>
+      </div>
+      <div class="col-md-1 d-none d-md-flex justify-content-center">
+        <div class="stat-divider"></div>
+      </div>
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="160">
+        <div class="stat-item">
+          <div class="stat-number">10<span>k+</span></div>
+          <div class="stat-label">Patients Served</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CORE SERVICES ── -->
+<section id="services" class="py-5">
+  <div class="container">
+    <p class="section-label" data-aos="fade-up">What We Offer</p>
+    <h2 class="section-title" data-aos="fade-up">Core Medical Services</h2>
+    <p class="section-sub" data-aos="fade-up">We offer a full spectrum of healthcare services with highly trained doctors and modern facilities — all at prices everyone can afford.</p>
+
+    <div class="row g-4">
+      <!-- Emergency Care -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">🚨</div>
+            <h3>Emergency Care</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Our emergency unit operates round the clock, 365 days a year. Trained emergency physicians and support staff ensure immediate attention for all critical cases.</p>
+            <div>
+              <span class="svc-tag">24 / 7 Open</span>
+              <span class="svc-tag">Ambulance</span>
+              <span class="svc-tag">Critical Care</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPD / Outpatient -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">🩺</div>
+            <h3>OPD Consultations</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Consult with our experienced doctors across multiple specialties without admission. Appointments available Monday–Saturday 8 AM – 8 PM and Sunday 9 AM – 2 PM.</p>
+            <div>
+              <span class="svc-tag">General Medicine</span>
+              <span class="svc-tag">Specialist Referral</span>
+              <span class="svc-tag">Follow-up</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnostics & Lab -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">🔬</div>
+            <h3>Diagnostics & Lab</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>State-of-the-art in-house laboratory and radiology services ensure fast, accurate results — so your diagnosis and treatment plan can begin without delay.</p>
+            <div>
+              <span class="svc-tag">Blood Tests</span>
+              <span class="svc-tag">X-Ray</span>
+              <span class="svc-tag">Ultrasound</span>
+              <span class="svc-tag">ECG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Surgery -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <div class="svc-card dark-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">⚕️</div>
+            <h3>Surgical Services</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Our operation theatres are equipped with advanced technology and managed by board-certified surgeons who specialise in general, laparoscopic, and orthopaedic procedures.</p>
+            <div>
+              <span class="svc-tag">General Surgery</span>
+              <span class="svc-tag">Laparoscopy</span>
+              <span class="svc-tag">Orthopaedic</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maternity & Gynaecology -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">🤰</div>
+            <h3>Maternity & Gynaecology</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Comprehensive care for mothers and newborns — from prenatal consultations to safe delivery, postnatal support, and specialised gynaecological treatments.</p>
+            <div>
+              <span class="svc-tag">Prenatal Care</span>
+              <span class="svc-tag">Safe Delivery</span>
+              <span class="svc-tag">Newborn Care</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Physiotherapy -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">🏃</div>
+            <h3>Physiotherapy</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Our physiotherapy unit helps patients recover from injuries, surgeries, and chronic conditions through personalised rehabilitation programs guided by certified therapists.</p>
+            <div>
+              <span class="svc-tag">Rehabilitation</span>
+              <span class="svc-tag">Post-Surgery</span>
+              <span class="svc-tag">Sports Injury</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paediatrics -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">👶</div>
+            <h3>Paediatrics</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Dedicated child healthcare in a warm, child-friendly environment — covering routine immunisations, developmental assessments, and treatment of childhood illnesses.</p>
+            <div>
+              <span class="svc-tag">Vaccination</span>
+              <span class="svc-tag">Newborn Check</span>
+              <span class="svc-tag">Growth Tracking</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cardiology -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">❤️</div>
+            <h3>Cardiology</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Expert cardiac consultations, ECG, echocardiography, and management of heart diseases. Early detection and preventive care for lasting heart health.</p>
+            <div>
+              <span class="svc-tag">ECG</span>
+              <span class="svc-tag">Echo</span>
+              <span class="svc-tag">Heart Disease</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eye & ENT -->
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <div class="svc-icon">👁️</div>
+            <h3>Eye, ENT & Dental</h3>
+          </div>
+          <div class="svc-card-body">
+            <p>Comprehensive vision care, ear-nose-throat treatments, and dental services under one roof — making complete sensory healthcare accessible and affordable.</p>
+            <div>
+              <span class="svc-tag">Vision Test</span>
+              <span class="svc-tag">ENT</span>
+              <span class="svc-tag">Dental Care</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEPARTMENTS PILLS ── -->
+<section class="py-5" style="background: white;">
+  <div class="container">
+    <p class="section-label" data-aos="fade-up">All Departments</p>
+    <h2 class="section-title" data-aos="fade-up">Browse by Department</h2>
+    <p class="section-sub" data-aos="fade-up">Every department is staffed with dedicated specialists who put patients first.</p>
+    <div class="text-center" data-aos="fade-up">
+      <a href="#" class="dept-pill"><span class="dp-icon">🫀</span> Cardiology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🧠</span> Neurology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🦴</span> Orthopaedics</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🤰</span> Gynaecology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">👶</span> Paediatrics</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🔬</span> Pathology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🦷</span> Dental</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">👁️</span> Ophthalmology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">👂</span> ENT</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🧴</span> Dermatology</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🏃</span> Physiotherapy</a>
+      <a href="#" class="dept-pill"><span class="dp-icon">🩻</span> Radiology</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="py-5">
+  <div class="container">
+    <p class="section-label" data-aos="fade-up">Simple Process</p>
+    <h2 class="section-title" data-aos="fade-up">How to Get Care</h2>
+    <p class="section-sub" data-aos="fade-up">Getting the care you need is simple and stress-free.</p>
+    <div class="row g-4">
+      <div class="col-6 col-md-3" data-aos="fade-up">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h5>Book Appointment</h5>
+          <p>Call us, WhatsApp, or walk in. Choose your preferred doctor and time slot with ease.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="80">
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h5>Consult Doctor</h5>
+          <p>Meet your doctor for a thorough consultation. All your concerns will be heard and addressed.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="160">
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h5>Diagnosis & Tests</h5>
+          <p>If needed, in-house lab and imaging tests are done quickly so your treatment is not delayed.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="240">
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h5>Treatment & Follow-up</h5>
+          <p>Receive your treatment plan, medicines, and a follow-up schedule to ensure complete recovery.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HIGHLIGHT STRIP ── -->
+<section class="py-5">
+  <div class="container" data-aos="fade-up">
+    <div class="highlight-strip">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <p style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.6);font-weight:500;margin-bottom:12px;">Why Choose Us</p>
+          <h2>Charitable Care Without Compromise</h2>
+          <p>Ek Noor Neki Da Charitable Hospital was founded on the belief that quality healthcare is a right, not a privilege. Every service we provide reflects our commitment to compassion and excellence.</p>
+          <ul class="hl-check">
+            <li>Highly qualified and experienced doctors across all specialties</li>
+            <li>Affordable charges — subsidised care for patients in need</li>
+            <li>Modern, hygienic infrastructure and clean wards</li>
+            <li>24/7 emergency services with ambulance dispatch</li>
+            <li>Guided by the spirit of Sewa (selfless service)</li>
+          </ul>
+          <a href="contact__5_.html" class="hl-btn">
+            Contact Us Today →
+          </a>
+        </div>
+        <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+          <div style="background:rgba(255,255,255,0.1);border-radius:20px;padding:40px 32px;text-align:center;width:100%;">
+            <div style="font-size:60px;margin-bottom:16px;">🏥</div>
+            <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:white;margin-bottom:8px;">Ek Noor Neki Da</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:24px;">Charitable Hospital, Ludhiana</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+              <span class="pulse-dot"></span>
+              <span style="font-size:13px;color:rgba(255,255,255,0.85);font-weight:500;">Emergency Always Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="py-5" style="background: white;">
+  <div class="container">
+    <p class="section-label" data-aos="fade-up">Patient Voices</p>
+    <h2 class="section-title" data-aos="fade-up">What Patients Say</h2>
+    <p class="section-sub" data-aos="fade-up">Real experiences from patients and their families.</p>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"The doctors here are incredibly kind. My mother was treated with so much respect and care during her surgery. We could not have asked for better service."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">G</div>
+            <div>
+              <div class="testi-name">Gurpreet Kaur</div>
+              <div class="testi-role">Patient's Daughter, Ludhiana</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"I came here for my heart check-up and was impressed by the lab facilities and how quickly the results came. Affordable and professional — a rare combination."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">R</div>
+            <div>
+              <div class="testi-name">Rajinder Singh</div>
+              <div class="testi-role">Cardiac Patient, Punjab</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"We brought our newborn here for vaccinations. The paediatric team was so gentle and patient. Ek Noor is a blessing for our community."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">H</div>
+            <div>
+              <div class="testi-name">Harmanpreet Brar</div>
+              <div class="testi-role">New Mother, Malerkotla</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BAND ── -->
+<section class="cta-band" data-aos="fade-up">
+  <h2>Ready to Get the Care You Deserve?</h2>
+  <p>Book an appointment today or visit us at Gurudwara Alamgir Sahib, Malerkotla Road, Ludhiana.</p>
+  <div>
+    <a href="home (1).html#appointment" class="btn-filled">Book Appointment</a>
+    <a href="https://wa.me/919876413100" target="_blank" class="btn-light-outline">
+      WhatsApp Us &nbsp;💬
+    </a>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer data-aos="fade-up" class="hospital-footer">
+  <div class="footer-container">
+    <div class="footer-box">
+      <h3>Ek Noor Neki da Charitable Hospital</h3>
+      <p>Dedicated to compassionate healthcare and community service. Affordable and quality medical care with dignity and respect for all.</p>
+    </div>
+    <div class="footer-box">
+      <h4>Contact Information</h4>
+      <ul>
+        <li>
+          <strong style="color:#cdd5e8;">Address:</strong><br>
+          <a href="https://www.google.com/maps/place/Ek+Noor+Neki+da+Hospital/@30.8145395,75.8647397,17z" target="_blank">
+            Gurudwara Alamgir Sahib,<br>Malerkotla Road, Ludhiana, Punjab
+          </a>
+        </li>
+        <li><strong style="color:#cdd5e8;">Phone:</strong> <a href="https://wa.me/919876413100">098764 13100</a></li>
+        <li><strong style="color:#cdd5e8;">Email:</strong> <a href="mailto:eknoorsewakendra@yahoo.com">eknoorsewakendra@yahoo.com</a></li>
+      </ul>
+    </div>
+    <div class="footer-box">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="home (1).html">Home</a></li>
+        <li><a href="services.html">Our Services</a></li>
+        <li><a href="patient.html">Patient Portal</a></li>
+        <li><a href="videos.html">Videos</a></li>
+    <li><a href="assistant.html">AI Assistant</a></li>
+        <li><a href="contact (5).html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Ek Noor Neki da Charitable Hospital. All Rights Reserved.
+  </div>
+</footer>
+
+<!-- Floating AI Button -->
+<div id="ai-float-btn" onclick="openAIChatModal()">
+  <div id="ai-float-bubble">Happy to Assist! 🤖</div>
+  <div id="ai-float-circle">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+  </div>
+</div>
+<div id="ai-modal-overlay" onclick="closeAIChatModal(event)">
+  <div id="ai-modal-box">
+    <button id="ai-close-btn" onclick="forceCloseAIChat()">✕</button>
+    <iframe src="assistant.html" id="ai-iframe"></iframe>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+ 
+  
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.navbar-custom')) {
+      document.getElementById('mainMenu').classList.remove('active');
+    }
+  });
+
+  function checkFeatureAccess() {
+    try {
+      const user = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      if (!user || !user.role) {
+        alert('Please login as an admin or doctor to use this feature.');
+        window.location.href = 'login1.html';
+        return false;
+      }
+      if (user.role !== 'admin' && user.role !== 'doctor') {
+        alert('Access denied. Only admins and doctors may use this feature.');
+        return false;
+      }
+      return true;
+    } catch(e) {
+      alert('Please login as an admin or doctor to use this feature.');
+      window.location.href = 'login1.html';
+      return false;
+    }
+  }
+
+  function openAIChatModal() {
+    if (!checkFeatureAccess()) return;
+    document.getElementById('ai-modal-overlay').classList.add('ai-active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeAIChatModal(e) {
+    if (e.target === document.getElementById('ai-modal-overlay')) forceCloseAIChat();
+  }
+  function forceCloseAIChat() {
+    document.getElementById('ai-modal-overlay').classList.remove('ai-active');
+    document.body.style.overflow = '';
+  }
+</script>
+<script>
+/* ══ NAVBAR JS ══ */
+(function() {
+  // Mobile toggle
+  window.toggleNavMenu = function() {
+    document.getElementById('navMenu').classList.toggle('open');
+  };
+
+  // Role bar
+  try {
+    var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+    if (u && u.role === 'admin') {
+      var bar = document.getElementById('adminBar');
+      if (bar) bar.style.display = 'flex';
+      var el = document.getElementById('adminBarName');
+      if (el) el.textContent = u.name || u.email || 'Admin';
+      // Update Login btn to show name
+      var btn = document.getElementById('navLoginBtn');
+      if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard (1).html'; }
+    } else if (u && u.role === 'doctor') {
+      var bar = document.getElementById('doctorBar');
+      if (bar) bar.style.display = 'flex';
+      var el = document.getElementById('doctorBarName');
+      if (el) el.textContent = u.name || u.email || 'Doctor';
+      var btn = document.getElementById('navLoginBtn');
+      if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard (1).html'; }
+    }
+  } catch(e) {}
+
+  window.doLogout = function() {
+    localStorage.removeItem('hospital_user');
+    window.location.href = 'login1.html';
+  };
+  window.goToSection = function(sec) {
+    localStorage.setItem('admin_goto_section', sec);
+  };
+})();
+
+</script>
+</body>
+</html>
