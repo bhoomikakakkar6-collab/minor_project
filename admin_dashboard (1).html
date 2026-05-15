@@ -4,12 +4,9 @@
 // ── STRICT ADMIN GUARD — runs before page renders ──
 (function() {
   try {
-    var SUPER_USER = 'bhoomikakakkar6@gmail.com';
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
-    var emailLower = (u.email || '').toLowerCase();
-    // Super-user always has access — no list check needed
-    if (emailLower === SUPER_USER) return;
     var approved = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
+    var emailLower = (u.email || '').toLowerCase();
     var isAdmin = u.role === 'admin' && approved.map(function(e){ return e.toLowerCase(); }).includes(emailLower);
     if (!isAdmin) window.location.replace('index.html');
   } catch(e) {
@@ -121,7 +118,7 @@
     .stab.active-tab { background:var(--navy); color:#fff; }
 
     /* TABLE */
-    .tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .tbl-wrap { overflow-x:auto; }
     table { width:100%; border-collapse:collapse; min-width:700px; }
     thead th { padding:11px 14px; text-align:left; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--subtext); font-weight:600; background:var(--table-head); border-bottom:1px solid var(--border); white-space:nowrap; }
     tbody td { padding:12px 14px; font-size:13px; color:var(--text); border-bottom:1px solid var(--border); vertical-align:middle; }
@@ -248,8 +245,6 @@
       .sb-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
       .sb-overlay.show{opacity:1;pointer-events:all}
       .content{padding:16px 12px} .grid-2,.grid-3{grid-template-columns:1fr}
-      .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-      .grid-4{grid-template-columns:1fr 1fr;}
     }
   
 /* ══ DASHBOARD TOPBAR ══ */
@@ -581,92 +576,6 @@
 @media (max-width: 700px) {
   .layout { grid-template-columns: 1fr; }
   .form-card { position: static; }
-}
-
-/* ══ COMPREHENSIVE MOBILE STYLES ══ */
-@media (max-width: 820px) {
-  /* Topbar nav links – hide on mobile */
-  .dash-topbar-nav { display: none !important; }
-  .dash-topbar { padding: 0 12px; height: 54px; }
-  .dash-topbar-brand-name { font-size: 13px; }
-  .dash-home-link { display: none; }
-  .dash-user-pill span { display: none; }
-  .dash-logout-btn { font-size: 11px; padding: 5px 10px; }
-
-  /* Main topbar */
-  .topbar { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
-  .topbar-title { font-size: 15px; }
-  .topbar-sub { font-size: 11px; }
-  .topbar-right { gap: 6px; }
-  .date-chip { font-size: 11px; padding: 5px 10px; }
-
-  /* Stat cards */
-  .stat-row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
-  .stat-card { padding: 14px; }
-  .stat-num { font-size: 22px !important; }
-
-  /* Tables – scrollable horizontally */
-  table { font-size: 12px; }
-  .tbl-wrap, .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  td, th { padding: 8px 10px !important; white-space: nowrap; }
-
-  /* Cards */
-  .card, .sect-card { border-radius: 10px; }
-  .card-head { padding: 12px 14px 10px; flex-direction: column; align-items: flex-start; gap: 6px; }
-
-  /* Content area */
-  .content { padding: 12px 10px !important; }
-
-  /* Buttons in rows */
-  .btn-row, .action-row { flex-wrap: wrap; gap: 6px; }
-  .btn { padding: 7px 12px; font-size: 12px; }
-
-  /* Modals */
-  .modal-box { width: 94vw !important; max-width: 94vw !important; padding: 18px 16px; }
-
-  /* Announcements / Access control section inputs */
-  input[type="text"], input[type="email"], input[type="number"], select, textarea {
-    font-size: 14px !important;
-  }
-
-  /* Reports / Analytics grids */
-  .rpt-grid { grid-template-columns: 1fr !important; }
-  .chart-placeholder { height: 140px; font-size: 13px; }
-
-  /* Doctor management cards */
-  .doc-grid { grid-template-columns: 1fr !important; }
-
-  /* Activity feed */
-  .act-row { flex-direction: column; gap: 4px; }
-
-  /* Settings */
-  .settings-grid { grid-template-columns: 1fr !important; }
-  .form-row { flex-direction: column; }
-}
-
-@media (max-width: 480px) {
-  /* Stat cards go single column on very small screens */
-  .stat-row { grid-template-columns: 1fr !important; }
-
-  /* Topbar stacks */
-  .topbar { padding: 10px 12px; }
-  .topbar-title { font-size: 14px; }
-
-  /* Tab buttons */
-  .stab { padding: 6px 10px; font-size: 11px; }
-
-  /* History count badge */
-  .hist-cnt { font-size: 10px; padding: 3px 8px; }
-
-  /* Nav item text */
-  .nav-item { font-size: 12.5px; padding: 9px 14px; }
-
-  /* Input rows in access control */
-  .input-row { flex-direction: column !important; }
-  .input-row input { width: 100% !important; }
-
-  /* Page title */
-  .pgTitle, #pgTitle { font-size: 14px !important; }
 }
 </style>
 </head>
@@ -1324,7 +1233,7 @@
     fetch(BASE+'/get-all-patients',{signal:AbortSignal.timeout(3000)})
       .then(r=>r.ok?r.json():Promise.reject()).then(server=>{allPats=mergePatients(server);refreshOverviewStats();}).catch(()=>{});
     fetch(AUTH_BASE+'/login_history',{signal:AbortSignal.timeout(3000)})
-      .then(r=>r.json()).then(h=>{loginHist=h;refreshOverviewStats();}).catch(()=>{});
+      .then(r=>r.json()).then(h=>{if(Array.isArray(h)){loginHist=h;refreshOverviewStats();}}).catch(()=>{});
   }
 
   async function fetchAllAppointments(){
@@ -1742,11 +1651,16 @@
   async function loadUsers(){
     document.getElementById('usersBody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr>';
     try{
-      const res=await fetch(AUTH_BASE+'/login_history');
-      loginHist=await res.json();
+      const res=await fetch(AUTH_BASE+'/login_history',{signal:AbortSignal.timeout(5000)});
+      const data=await res.json();
+      // Guard: server must return an array
+      if(!res.ok || !Array.isArray(data)){
+        throw new Error(Array.isArray(data)?'Bad response':((data&&data.error)||'Server error'));
+      }
+      loginHist=data;
       document.getElementById('sU').textContent=loginHist.length;
       document.getElementById('usersBody').innerHTML=loginHist.length===0
-        ?'<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--subtext);">No users found.</td></tr>'
+        ?'<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--subtext);">No users found. Users appear here after their first login.</td></tr>'
         :loginHist.map((u,i)=>`
           <tr>
             <td style="font-size:12px;color:var(--subtext);">${i+1}</td>
@@ -1756,7 +1670,12 @@
             <td><button class="btn-del" onclick="delUser('${u.email}')">🗑 Delete</button></td>
           </tr>`).join('');
     }catch(e){
-      document.getElementById('usersBody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;color:#991b1b;">Auth server not reachable on port 5001.</td></tr>';
+      document.getElementById('sU').textContent='—';
+      document.getElementById('usersBody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:28px;color:#991b1b;">
+        ⚠️ Could not reach auth server on port 5001.<br>
+        <span style="font-size:12px;color:var(--subtext);margin-top:6px;display:block;">Make sure <code>server.py</code> is running: <code>python server.py</code></span>
+        <button class="btn-sm btn-sky" style="margin-top:12px;" onclick="loadUsers()">↺ Retry</button>
+      </td></tr>`;
     }
   }
   async function delUser(email){
