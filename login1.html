@@ -327,7 +327,7 @@
       var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
       if (u && u.role) {
         if (u.role === 'patient' || u.role === 'visitor') {
-          window.location.replace('home (1).html');
+          window.location.replace('index.html');
         } else if (u.role === 'admin') {
           window.location.replace('admin_dashboard (1).html');
         } else if (u.role === 'doctor') {
@@ -490,7 +490,7 @@
 
     showMsg('l-msg','success','Login successful! Redirecting...');
 
-    let dest = 'home (1).html';
+    let dest = 'index.html';
     if (role === 'admin')        dest = 'admin_dashboard (1).html';
     else if (role === 'doctor')  dest = 'doctor_dashboard (1).html';
 

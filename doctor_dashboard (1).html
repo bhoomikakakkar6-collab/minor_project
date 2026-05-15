@@ -7,8 +7,8 @@
     var approved=JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
     var emailLower=(u.email||'').toLowerCase();
     var isDoctor=u.role==='doctor'&&approved.map(function(e){return e.toLowerCase();}).includes(emailLower);
-    if(!isDoctor)window.location.replace('home (1).html');
-  }catch(e){window.location.replace('home (1).html');}
+    if(!isDoctor)window.location.replace('index.html');
+  }catch(e){window.location.replace('index.html');}
 })();
 </script>
 <head>
@@ -303,7 +303,7 @@ tbody tr:last-child td{border-bottom:none;}
       <div>
         <div class="sb-brand-name">Ek Noor Neki Da</div>
         <div class="sb-brand-sub">Doctor Portal</div>
-        <div class="sb-brand-sub"><a href="home (1).html">Return to Home</a></div>
+        <div class="sb-brand-sub"><a href="index.html">Return to Home</a></div>
       </div>
     </div>
   </div>

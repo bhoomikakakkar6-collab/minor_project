@@ -1169,7 +1169,7 @@ body::before {
 
 <!-- ══ UNIFIED NAVBAR ══ -->
 <nav class="navbar-custom" id="mainNavbar">
-  <a class="nav-brand" href="home (1).html">
+  <a class="nav-brand" href="index.html">
     <img src="logo.jpg" alt="Ek Noor Logo">
     <div>
       <span class="nav-brand-name">Ek Noor Neki Da</span>
@@ -1178,7 +1178,7 @@ body::before {
   </a>
   <button class="menu-toggle" onclick="toggleNavMenu()" aria-label="Toggle menu">☰</button>
   <ul class="nav-menu" id="navMenu">
-    <li><a href="home (1).html" class="active">Home</a></li>
+    <li><a href="index.html" class="active">Home</a></li>
     <li><a href="doctors.html">Doctors</a></li>
     <li><a href="patient.html">Patient</a></li>
     <li><a href="services.html">Services</a></li>
@@ -1741,8 +1741,8 @@ body::before {
       // Patients can only access home page and patient.html
       if (u.role === 'patient') {
         // Get current page name
-        var currentPage = window.location.pathname.split('/').pop() || 'home (1).html';
-        var allowedPages = ['home (1).html', 'home (1).html', 'patient.html', 'doctors.html', 'services.html', 'about.html', 'videos.html', 'contact (5).html', 'assistant.html'];
+        var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        var allowedPages = ['index.html', 'index.html', 'patient.html', 'doctors.html', 'services.html', 'about.html', 'videos.html', 'contact (5).html', 'assistant.html'];
         
         // Check if current page is allowed
         var isAllowed = allowedPages.some(function(page) {
@@ -1751,7 +1751,7 @@ body::before {
         
         // If trying to access unauthorized page, redirect to home
         if (!isAllowed) {
-          window.location.replace('home (1).html');
+          window.location.replace('index.html');
           return false;
         }
         return true;
@@ -1882,3 +1882,4 @@ body::before {
 </script>
 </body>
 </html>
+

@@ -7,14 +7,14 @@
 (function() {
   try {
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
-    var page = location.pathname.split('/').pop() || 'home (1).html';
+    var page = location.pathname.split('/').pop() || 'index.html';
     var DASHBOARD_PAGES = ['admin_dashboard (1).html','doctor_dashboard (1) .html'];
     if (!u || !u.role) {
       if (page !== 'login1.html') window.location.replace('login1.html');
       return;
     }
     if (u.role === 'patient' && DASHBOARD_PAGES.indexOf(page) !== -1) {
-      window.location.replace('home (1).html');
+      window.location.replace('index.html');
     }
   } catch(e) {
     window.location.replace('login1.html');
@@ -355,7 +355,7 @@
 
 <!-- ══ UNIFIED NAVBAR ══ -->
 <nav class="navbar-custom" id="mainNavbar">
-  <a class="nav-brand" href="home (1).html">
+  <a class="nav-brand" href="index.html">
     <img src="logo.jpg" alt="Ek Noor Logo">
     <div>
       <span class="nav-brand-name">Ek Noor Neki Da</span>
@@ -364,7 +364,7 @@
   </a>
   <button class="menu-toggle" onclick="toggleNavMenu()" aria-label="Toggle menu">☰</button>
   <ul class="nav-menu" id="navMenu">
-    <li><a href="home (1).html">Home</a></li>
+    <li><a href="index.html">Home</a></li>
     <li><a href="doctors.html">Doctors</a></li>
     <li><a href="patient.html">Patient</a></li>
     <li><a href="services.html">Services</a></li>

@@ -8,9 +8,9 @@
     var approved = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
     var emailLower = (u.email || '').toLowerCase();
     var isAdmin = u.role === 'admin' && approved.map(function(e){ return e.toLowerCase(); }).includes(emailLower);
-    if (!isAdmin) window.location.replace('home (1).html');
+    if (!isAdmin) window.location.replace('index.html');
   } catch(e) {
-    window.location.replace('home (1).html');
+    window.location.replace('index.html');
   }
 })();
 </script>
@@ -582,12 +582,12 @@
 <body>
 <!-- ══ ADMIN DASHBOARD TOPBAR ══ -->
 <div class="dash-topbar" id="dashTopbar">
-  <a class="dash-topbar-brand" href="home (1).html">
+  <a class="dash-topbar-brand" href="index.html">
     <img src="logo.jpg" alt="Logo">
     <span class="dash-topbar-brand-name">Ek Noor Neki Da</span>
   </a>
   <div class="dash-topbar-nav">
-    <a href="home (1).html">🏠 Public Site</a>
+    <a href="index.html">🏠 Public Site</a>
     <a href="doctors .html">👨‍⚕️ Doctors</a>
     <a href="patient .html">🧑 Patients</a>
     <a href="services .html">⚕️ Services</a>
@@ -597,7 +597,7 @@
       <div class="dash-user-avatar">🛡️</div>
       <span id="topbarAdminName">Admin</span>
     </div>
-    <a class="dash-home-link" href="home (1).html">← Public View</a>
+    <a class="dash-home-link" href="index.html">← Public View</a>
     <button class="dash-logout-btn" onclick="doLogout()">Logout</button>
   </div>
 </div>
@@ -676,7 +676,7 @@
     <a class="nav-item" onclick="goSec('access')"><span class="ico">🛡️</span>Access Control</a>
     <a class="nav-item" onclick="goSec('settings')"><span class="ico">⚙️</span>Settings</a>
     <div class="nav-lbl">Navigation</div>
-    <a class="nav-item" href="home (1).html"><span class="ico">🏠</span>Hospital Website</a>
+    <a class="nav-item" href="index.html"><span class="ico">🏠</span>Hospital Website</a>
     <a class="nav-item" href="doctor_dashboard (1).html"><span class="ico">🩺</span>Doctor Dashboard</a>
     <a class="nav-item" href="assistant.html"><span class="ico">🤖</span>AI Assistant</a>
   </nav>

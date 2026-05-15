@@ -8,14 +8,14 @@
 (function() {
   try {
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
-    var page = location.pathname.split('/').pop() || 'home (1).html';
+    var page = location.pathname.split('/').pop() || 'index.html';
     var DASHBOARD_PAGES = ['admin_dashboard (1).html','doctor_dashboard (1).html'];
     if (!u || !u.role) {
       if (page !== 'login1.html') window.location.replace('login1.html');
       return;
     }
     if (u.role === 'patient' && DASHBOARD_PAGES.indexOf(page) !== -1) {
-      window.location.replace('home (1).html');
+      window.location.replace('index.html');
     }
   } catch(e) {
     window.location.replace('login1.html');
@@ -359,11 +359,11 @@
 <body>
 <!-- TOP NAV BAR -->
 <nav style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(4,44,83,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(79,142,247,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;font-family:DM Sans,sans-serif;">
-  <a href="home (1).html" style="display:flex;align-items:center;gap:8px;color:white;text-decoration:none;font-size:14px;font-weight:600;">
+  <a href="index.html" style="display:flex;align-items:center;gap:8px;color:white;text-decoration:none;font-size:14px;font-weight:600;">
     <span style="font-size:18px;">🏥</span> Ek Noor Neki Da Hospital
   </a>
   <div style="display:flex;gap:4px;flex-wrap:wrap;">
-    <a href="home (1).html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Home</a>
+    <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Home</a>
     <a href="doctors.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Doctors</a>
     <a href="patient.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Patient</a>
     <a href="services.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Services</a>
