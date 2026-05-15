@@ -1,0 +1,8 @@
+flask
+flask-cors
+groq
+requests
+fitbit
+psycopg2-binary
+werkzeug
+gunicorn
