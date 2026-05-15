@@ -285,17 +285,90 @@ tbody tr:last-child td{border-bottom:none;}
 .mc-bar:hover{opacity:.8;}
 
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%);}
+  /* Sidebar slide-in */
+  .sidebar{transform:translateX(-100%); z-index:300;}
   .sidebar.open{transform:translateX(0);}
+  /* Overlay when sidebar open */
+  .sb-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:299;opacity:0;pointer-events:none;transition:opacity .3s;}
+  .sb-overlay.show{opacity:1;pointer-events:all;}
   .main{margin-left:0;}
   .mob-btn{display:flex!important;align-items:center;justify-content:center;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .quick-actions{grid-template-columns:1fr 1fr;}
-  .content{padding:16px 14px;}
+
+  /* Topbar */
+  .topbar{padding:12px 14px;flex-wrap:wrap;gap:6px;}
+  .topbar-left h1{font-size:16px;}
+  .topbar-right{gap:6px;}
+
+  /* Stats grid → 2 cols */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-card{padding:14px;}
+
+  /* Quick actions → 2 cols */
+  .quick-actions{grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* Content padding */
+  .content{padding:14px 12px;}
+
+  /* Hero strip stacks */
+  .hero-strip{flex-direction:column;padding:16px 18px;gap:12px;}
+  .hero-strip>*{width:100%;}
+
+  /* Tables – horizontal scroll */
+  .tbl-wrap, .card > div > table, .card table{overflow-x:auto;-webkit-overflow-scrolling:touch;display:block;}
+  table{min-width:500px;}
+  td,th{padding:8px 10px!important;font-size:12px;white-space:nowrap;}
+
+  /* Vitals grid – 2 cols */
+  .vitals-grid{grid-template-columns:1fr 1fr;padding:14px;}
+
+  /* Card heads */
+  .card-head{padding:12px 16px 10px;flex-wrap:wrap;gap:8px;}
+  .card-head h3{font-size:14px;}
+
+  /* Doctor info card */
+  .doc-card{margin:10px 10px;}
+
+  /* Modal */
+  .modal-box{width:94vw!important;max-width:94vw!important;padding:18px 14px;}
+
+  /* Buttons */
+  .btn-outline,.btn-fill{padding:7px 12px;font-size:12px;}
+
+  /* Sidebar nav items */
+  .nav-item{padding:9px 14px;font-size:13px;}
+}
+
+@media(max-width:480px){
+  /* Stats single column */
+  .stats-grid{grid-template-columns:1fr!important;}
+  .quick-actions{grid-template-columns:1fr 1fr!important;}
+
+  /* Topbar minimal */
+  .topbar-left h1{font-size:15px;}
+  .topbar-left p{display:none;}
+
+  /* Content */
+  .content{padding:10px 8px;}
+
+  /* Vitals single column */
+  .vitals-grid{grid-template-columns:1fr 1fr;}
+
+  /* Mini chart smaller */
+  .mini-chart{height:30px;}
+
+  /* Stat card values smaller */
+  .stat-val{font-size:22px!important;}
+
+  /* Announcement items */
+  .ann-item{padding:10px 14px;}
+
+  /* Input fields */
+  input,select,textarea{font-size:14px!important;}
 }
 </style>
 </head>
 <body>
+<div class="sb-overlay" id="sb-overlay" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('show');"></div>
 <div class="glow-orb g1"></div>
 <div class="glow-orb g2"></div>
 
@@ -354,7 +427,7 @@ tbody tr:last-child td{border-bottom:none;}
         <input type="text" placeholder="Search patients..." id="globalSearch" oninput="onGlobalSearch(this.value)"/>
       </div>
       <button class="tb-btn" id="darkBtn" onclick="toggleDark()" title="Toggle theme">🌙</button>
-      <button class="mob-btn tb-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <button class="mob-btn tb-btn" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('show');">☰</button>
     </div>
   </div>
 
