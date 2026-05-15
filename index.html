@@ -1678,7 +1678,7 @@ body::before {
     }
     let booked = false;
     try {
-      const response = await fetch('http://localhost:5002/book-appointment', {
+      const response = await fetch('https://your-appointment-service.onrender.com/book-appointment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -1882,4 +1882,3 @@ body::before {
 </script>
 </body>
 </html>
-

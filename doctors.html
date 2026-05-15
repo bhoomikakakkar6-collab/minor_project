@@ -1378,7 +1378,7 @@ to   { background-color: rgba(15,40,165,0.97); }
 
   // ── SUBMIT APPOINTMENT ──
   // Uses same logic as patient portal: tries Flask server → falls back to localStorage
-  const SERVER = 'http://localhost:5000';
+  const SERVER = 'https://your-ai-service.onrender.com';
 
   function localGetAppointments() {
     try { return JSON.parse(localStorage.getItem('ek_noor_appointments') || '[]'); } catch { return []; }
