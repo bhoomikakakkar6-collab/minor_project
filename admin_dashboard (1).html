@@ -4,9 +4,12 @@
 // ── STRICT ADMIN GUARD — runs before page renders ──
 (function() {
   try {
+    var SUPER_USER = 'bhoomikakakkar6@gmail.com';
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
-    var approved = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
     var emailLower = (u.email || '').toLowerCase();
+    // Super-user always has access — no list check needed
+    if (emailLower === SUPER_USER) return;
+    var approved = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
     var isAdmin = u.role === 'admin' && approved.map(function(e){ return e.toLowerCase(); }).includes(emailLower);
     if (!isAdmin) window.location.replace('index.html');
   } catch(e) {

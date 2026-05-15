@@ -3,12 +3,16 @@
 <script>
 (function(){
   try{
+    var SUPER_USER='bhoomikakakkar6@gmail.com';
     var u=JSON.parse(localStorage.getItem('hospital_user')||'{}');
-    var approved=JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
     var emailLower=(u.email||'').toLowerCase();
+    // Super-user always has access — no list check needed
+    if(emailLower===SUPER_USER) return;
+    var approved=JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
     var isDoctor=u.role==='doctor'&&approved.map(function(e){return e.toLowerCase();}).includes(emailLower);
     if(!isDoctor)window.location.replace('index.html');
   }catch(e){window.location.replace('index.html');}
+})();
 })();
 </script>
 <head>
