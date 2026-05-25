@@ -329,9 +329,9 @@
         if (u.role === 'patient' || u.role === 'visitor') {
           window.location.replace('index.html');
         } else if (u.role === 'admin') {
-          window.location.replace('admin_dashboard%20(1).html');
+          window.location.replace('admin_dashboard.html');
         } else if (u.role === 'doctor') {
-          window.location.replace('doctor_dashboard%20(1).html');
+          window.location.replace('doctor_dashboard.html');
         }
       }
     } catch(e) {}
@@ -507,7 +507,7 @@
         }
       } catch(e) {}
       showMsg('l-msg','success','Welcome back, Admin! Redirecting...');
-      setTimeout(() => { window.location.href = 'admin_dashboard%20(1).html'; }, 500);
+      setTimeout(() => { window.location.href = 'admin_dashboard.html'; }, 500);
       return;
     }
 
@@ -551,8 +551,8 @@
     showMsg('l-msg','success','Login successful! Redirecting...');
 
     let dest = 'index.html';
-    if (role === 'admin')        dest = 'admin_dashboard%20(1).html';
-    else if (role === 'doctor')  dest = 'doctor_dashboard%20(1).html';
+    if (role === 'admin')        dest = 'admin_dashboard.html';
+    else if (role === 'doctor')  dest = 'doctor_dashboard.html';
 
     setTimeout(() => { window.location.href = dest; }, 500);
   }

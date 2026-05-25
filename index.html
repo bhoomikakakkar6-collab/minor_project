@@ -1199,11 +1199,11 @@ body::before {
     <span class="role-bar-badge">Admin Panel</span>
   </div>
   <div class="role-bar-links">
-    <a href="admin_dashboard (1).html">📊 Dashboard</a>
-    <a href="admin_dashboard (1).html" onclick="goToSection('appointments')">📅 Appointments</a>
-    <a href="admin_dashboard (1).html" onclick="goToSection('patients')">👥 Patients</a>
-    <a href="admin_dashboard (1).html" onclick="goToSection('doctors')">👨‍⚕️ Doctors</a>
-    <a href="admin_dashboard (1).html" onclick="goToSection('access')">🛡️ Access</a>
+    <a href="admin_dashboard.html">📊 Dashboard</a>
+    <a href="admin_dashboard.html" onclick="goToSection('appointments')">📅 Appointments</a>
+    <a href="admin_dashboard.html" onclick="goToSection('patients')">👥 Patients</a>
+    <a href="admin_dashboard.html" onclick="goToSection('doctors')">👨‍⚕️ Doctors</a>
+    <a href="admin_dashboard.html" onclick="goToSection('access')">🛡️ Access</a>
   </div>
   <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
 </div>
@@ -1215,8 +1215,8 @@ body::before {
     <span class="role-bar-badge">Doctor Portal</span>
   </div>
   <div class="role-bar-links">
-    <a href="doctor_dashboard (1).html">🩺 Dashboard</a>
-    <a href="doctor_dashboard (1).html#appointments">📅 Appointments</a>
+    <a href="doctor_dashboard.html">🩺 Dashboard</a>
+    <a href="doctor_dashboard.html#appointments">📅 Appointments</a>
     <a href="patient.html">👥 Patients</a>
   </div>
   <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
@@ -1731,7 +1731,7 @@ body::before {
       
       // Doctors always go to their dashboard
       if (u.role === 'doctor') {
-        window.location.replace('doctor_dashboard%20(1).html');
+        window.location.replace('doctor_dashboard.html');
         return false;
       }
       
@@ -1800,13 +1800,13 @@ body::before {
       if (u && u.role === 'admin') {
         document.getElementById('adminBar').style.display = 'flex';
         document.getElementById('adminBarName').textContent = u.name || u.email || 'Admin';
-        if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard (1).html'; }
+        if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard.html'; }
         showNavUser('🛡️ ' + (u.name || 'Admin'));
 
       } else if (u && u.role === 'doctor') {
         document.getElementById('doctorBar').style.display = 'flex';
         document.getElementById('doctorBarName').textContent = u.name || u.email || 'Doctor';
-        if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard (1).html'; }
+        if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard.html'; }
         showNavUser('👨‍⚕️ ' + (u.name || 'Doctor'));
 
       } else if (u && u.role === 'patient') {
