@@ -272,9 +272,263 @@ def login_counter():
         if cur  is not None: cur.close()
         if conn is not None: conn.close()
 
+# ── Appointments Table ───────────────────────────────────
+def create_appointments_table():
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None: return
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS appointments (
+                id         SERIAL PRIMARY KEY,
+                full_name  VARCHAR(255),
+                phone      VARCHAR(20),
+                email      VARCHAR(255),
+                department VARCHAR(100),
+                doctor     VARCHAR(255),
+                date       VARCHAR(50),
+                status     VARCHAR(50) DEFAULT 'pending',
+                reason     TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        print("Table 'appointments' is ready!")
+    except Exception as e:
+        print("Error creating appointments table:", e)
+        if conn: conn.rollback()
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── Patients Table ────────────────────────────────────────
+def create_patients_table():
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None: return
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS patients (
+                id         SERIAL PRIMARY KEY,
+                full_name  VARCHAR(255),
+                phone      VARCHAR(20) UNIQUE,
+                email      VARCHAR(255),
+                department VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        print("Table 'patients' is ready!")
+    except Exception as e:
+        print("Error creating patients table:", e)
+        if conn: conn.rollback()
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── GET /appointments ─────────────────────────────────────
+@app.route('/appointments', methods=['GET', 'OPTIONS'])
+def get_appointments():
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM appointments ORDER BY created_at DESC")
+        rows = cur.fetchall()
+        result = [dict(row) for row in rows]
+        # Convert datetime to string so JSON serialises properly
+        for r in result:
+            for k, v in r.items():
+                if hasattr(v, 'isoformat'):
+                    r[k] = v.isoformat()
+        return jsonify(result), 200
+    except Exception as e:
+        print("Get appointments error:", e)
+        return jsonify({"error": "Failed to fetch appointments."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── POST /book-appointment ────────────────────────────────
+@app.route('/book-appointment', methods=['POST', 'OPTIONS'])
+def book_appointment():
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body."}), 400
+
+    full_name  = (data.get('full_name')  or '').strip()
+    phone      = (data.get('phone')      or '').strip()
+    email      = (data.get('email')      or '').strip()
+    department = (data.get('department') or '').strip()
+    doctor     = (data.get('doctor')     or '').strip()
+    date       = (data.get('date')       or '').strip()
+
+    if not full_name or not phone or not department or not date:
+        return jsonify({"error": "full_name, phone, department and date are required."}), 400
+
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO appointments (full_name, phone, email, department, doctor, date) VALUES (%s,%s,%s,%s,%s,%s)",
+            (full_name, phone, email, department, doctor, date)
+        )
+        # Also upsert into patients table
+        cur.execute("""
+            INSERT INTO patients (full_name, phone, email, department)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (phone) DO NOTHING
+        """, (full_name, phone, email, department))
+        conn.commit()
+        return jsonify({"success": True, "message": "Appointment booked successfully!"}), 201
+    except Exception as e:
+        print("Book appointment error:", e)
+        if conn: conn.rollback()
+        return jsonify({"error": "Booking failed."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── POST /appointment/<id>/accept ─────────────────────────
+@app.route('/appointment/<int:appt_id>/accept', methods=['POST', 'OPTIONS'])
+def accept_appointment(appt_id):
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("UPDATE appointments SET status='accepted' WHERE id=%s", (appt_id,))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Appointment not found."}), 404
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print("Accept error:", e)
+        if conn: conn.rollback()
+        return jsonify({"error": "Failed to accept."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── POST /appointment/<id>/reject ─────────────────────────
+@app.route('/appointment/<int:appt_id>/reject', methods=['POST', 'OPTIONS'])
+def reject_appointment(appt_id):
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    data   = request.get_json() or {}
+    reason = data.get('reason', '')
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("UPDATE appointments SET status='rejected', reason=%s WHERE id=%s", (reason, appt_id))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Appointment not found."}), 404
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print("Reject error:", e)
+        if conn: conn.rollback()
+        return jsonify({"error": "Failed to reject."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── POST /appointment/<id>/reset ──────────────────────────
+@app.route('/appointment/<int:appt_id>/reset', methods=['POST', 'OPTIONS'])
+def reset_appointment(appt_id):
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("UPDATE appointments SET status='pending', reason=NULL WHERE id=%s", (appt_id,))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Appointment not found."}), 404
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print("Reset error:", e)
+        if conn: conn.rollback()
+        return jsonify({"error": "Failed to reset."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── DELETE /appointment/<id>/delete ───────────────────────
+@app.route('/appointment/<int:appt_id>/delete', methods=['DELETE', 'OPTIONS'])
+def delete_appointment(appt_id):
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("DELETE FROM appointments WHERE id=%s", (appt_id,))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Appointment not found."}), 404
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print("Delete appointment error:", e)
+        if conn: conn.rollback()
+        return jsonify({"error": "Failed to delete."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
+# ── GET /get-all-patients ─────────────────────────────────
+@app.route('/get-all-patients', methods=['GET', 'OPTIONS'])
+def get_all_patients():
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+    conn = None; cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM patients ORDER BY created_at DESC")
+        rows = cur.fetchall()
+        result = [dict(row) for row in rows]
+        for r in result:
+            for k, v in r.items():
+                if hasattr(v, 'isoformat'):
+                    r[k] = v.isoformat()
+        return jsonify(result), 200
+    except Exception as e:
+        print("Get patients error:", e)
+        return jsonify({"error": "Failed to fetch patients."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
 # ── Initialize Tables on startup (runs under gunicorn too) ──
 create_table()
 create_login_history_table()
+create_appointments_table()
+create_patients_table()
 
 # ── Run Server ───────────────────────────────────────────
 if __name__ == '__main__':
