@@ -1672,8 +1672,8 @@
     }catch(e){
       document.getElementById('sU').textContent='—';
       document.getElementById('usersBody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:28px;color:#991b1b;">
-        ⚠️ Could not reach auth server on port 5001.<br>
-        <span style="font-size:12px;color:var(--subtext);margin-top:6px;display:block;">Make sure <code>server.py</code> is running: <code>python server.py</code></span>
+        ⚠️ Could not reach server. Check your connection and try again.<br>
+        <span style="font-size:12px;color:var(--subtext);margin-top:6px;display:block;">The server may still be waking up — wait 30 seconds and retry.</span>
         <button class="btn-sm btn-sky" style="margin-top:12px;" onclick="loadUsers()">↺ Retry</button>
       </td></tr>`;
     }

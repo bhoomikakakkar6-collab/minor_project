@@ -6,11 +6,34 @@ import psycopg2
 import psycopg2.extras
 
 app = Flask(__name__)
+
+# Allow requests from any origin (browser, Render, local dev)
 CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "DELETE", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
 }})
+
+# ── Fix: Render "Host not in allowlist" ──────────────────
+# Disable Flask host checking so the hosted dashboard can reach the API
+app.config['SERVER_NAME'] = None
+
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        from flask import make_response
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin']  = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return response
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin']  = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
 # ── Database Config ──────────────────────────────────────
 # Use environment variables so the password isn't hardcoded
