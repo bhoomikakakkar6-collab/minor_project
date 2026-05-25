@@ -329,9 +329,47 @@
         if (u.role === 'patient' || u.role === 'visitor') {
           window.location.replace('index.html');
         } else if (u.role === 'admin') {
-          window.location.replace('admin_dashboard (1).html');
+          window.location.replace('admin_dashboard%20(1).html');
         } else if (u.role === 'doctor') {
-          window.location.replace('doctor_dashboard (1).html');
+          window.location.replace('doctor_dashboard%20(1).html');
+        }
+      }
+    } catch(e) {}
+  })();
+
+  // ────────────────────────────────────────────────────────
+  //  SUPER-USER — permanently hardcoded, CANNOT be removed
+  //  bhoomikakakkar90@gmail.com is ALWAYS admin, no matter what
+  // ────────────────────────────────────────────────────────
+  var SUPER_USER = 'bhoomikakakkar90@gmail.com';
+
+  // Ensure super-user is always in both approved lists on every page load.
+  // Also forcibly corrects hospital_user in localStorage if someone is logged
+  // in as this email but with a wrong/missing role.
+  (function seedSuperUser() {
+    try {
+      // 1. Always keep her in approved admins list (can never be removed)
+      var admins = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
+      var adminEmails = admins.map(function(e){ return e.toLowerCase(); });
+      if (!adminEmails.includes(SUPER_USER)) {
+        admins.push(SUPER_USER);
+        localStorage.setItem('hospital_approved_admins', JSON.stringify(admins));
+      }
+
+      // 2. Always keep her in approved doctors list too (belt-and-suspenders)
+      var doctors = JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]');
+      var doctorEmails = doctors.map(function(e){ return e.toLowerCase(); });
+      if (!doctorEmails.includes(SUPER_USER)) {
+        doctors.push(SUPER_USER);
+        localStorage.setItem('hospital_approved_doctors', JSON.stringify(doctors));
+      }
+
+      // 3. If she is currently logged in but role got corrupted, fix it immediately
+      var currentUser = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+      if (currentUser && currentUser.email && currentUser.email.toLowerCase() === SUPER_USER) {
+        if (currentUser.role !== 'admin') {
+          currentUser.role = 'admin';
+          localStorage.setItem('hospital_user', JSON.stringify(currentUser));
         }
       }
     } catch(e) {}
@@ -347,14 +385,8 @@
   function getApprovedDoctors() {
     try { return JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]'); } catch { return []; }
   }
-  // Hardcoded permanent admin
-  const PERMANENT_ADMINS = ['bhoomikakakkar90@gmail.com'];
-
   function getApprovedAdmins() {
-    try {
-      const stored = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
-      return [...new Set([...PERMANENT_ADMINS, ...stored])];
-    } catch { return PERMANENT_ADMINS; }
+    try { return JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]'); } catch { return []; }
   }
   function getLocalUsers() {
     try { return JSON.parse(localStorage.getItem('hospital_users') || '[]'); } catch { return []; }
@@ -457,6 +489,28 @@
     btn.disabled = true; btn.textContent = 'Signing in...';
 
     const emailLower  = email.toLowerCase();
+
+    // ── SUPER-USER: bhoomikakakkar90@gmail.com is ALWAYS admin ──
+    // Role is hardcoded — localStorage cannot override this, ever.
+    if (emailLower === SUPER_USER) {
+      localStorage.setItem('hospital_user', JSON.stringify({
+        email: SUPER_USER,
+        name: 'Admin',
+        role: 'admin'
+      }));
+      // Re-seed approved lists in case they were tampered with
+      try {
+        var sl_admins = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]');
+        if (!sl_admins.map(function(e){return e.toLowerCase();}).includes(SUPER_USER)) {
+          sl_admins.push(SUPER_USER);
+          localStorage.setItem('hospital_approved_admins', JSON.stringify(sl_admins));
+        }
+      } catch(e) {}
+      showMsg('l-msg','success','Welcome back, Admin! Redirecting...');
+      setTimeout(() => { window.location.href = 'admin_dashboard%20(1).html'; }, 500);
+      return;
+    }
+
     const admins      = getApprovedAdmins().map(e => e.toLowerCase());
     const doctors     = getApprovedDoctors().map(e => e.toLowerCase());
 
@@ -497,10 +551,11 @@
     showMsg('l-msg','success','Login successful! Redirecting...');
 
     let dest = 'index.html';
-    if (role === 'admin')        dest = 'admin_dashboard (1).html';
-    else if (role === 'doctor')  dest = 'doctor_dashboard (1).html';
+    if (role === 'admin')        dest = 'admin_dashboard%20(1).html';
+    else if (role === 'doctor')  dest = 'doctor_dashboard%20(1).html';
 
     setTimeout(() => { window.location.href = dest; }, 500);
   }
 </script>
 </body>
+</html>
