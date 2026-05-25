@@ -1,4 +1,27 @@
-*.pyc
-__pycache__/
+# Virtual environment
+.venv/
 venv/
+env/
+
+# Environment files with secrets
 .env
+*.env
+environment.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

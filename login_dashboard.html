@@ -3,10 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login Activity — Ek Noor Neki Da Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0f1e;
+            --card: #111827;
+            --border: #1e2d45;
+            --accent: #00c8ff;
+            --accent2: #00ff9d;
+            --danger: #ff4d6d;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --glow: 0 0 20px rgba(0,200,255,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+        .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 48px; flex-wrap: wrap; gap: 16px; }
+        .logo { display: flex; align-items: center; gap: 14px; }
+        .logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: var(--glow); }
+        .logo-text h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: white; }
+        .logo-text p { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+        .back-btn { display: flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--muted); text-decoration: none; font-size: 14px; font-family: 'Syne', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; position: relative; overflow: hidden; animation: fadeUp 0.5s ease both; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent2), #a78bfa); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, var(--danger)); }
+        .stat-label { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-value { font-size: 36px; font-weight: 800; color: white; line-height: 1; }
+        .stat-value.accent { color: var(--accent); }
+        .stat-value.green { color: var(--accent2); }
+        .stat-value.orange { color: #f59e0b; }
+        .table-section { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; animation: fadeUp 0.6s ease both; }
+        .table-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+        .table-title { font-size: 18px; font-weight: 700; color: white; }
+        .table-subtitle { font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+        .refresh-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: transparent; border: 1px solid var(--accent); border-radius: 10px; color: var(--accent); font-family: 'Syne', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+        .refresh-btn:hover { background: rgba(0,200,255,0.1); }
+        .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+        .search-bar { padding: 16px 28px; border-bottom: 1px solid var(--border); }
+        .search-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .search-input:focus { border-color: var(--accent); }
+        .search-input::placeholder { color: var(--muted); }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 14px 28px; text-align: left; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+        tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; animation: fadeUp 0.4s ease both; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(0,200,255,0.04); }
+        td { padding: 18px 28px; font-size: 14px; }
+        .rank { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 13px; }
+        .rank.top { color: #f59e0b; font-weight: 600; }
+        .email-cell { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--bg); flex-shrink: 0; }
+        .email-text { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); }
+        .login-count { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+        .count-high { background: rgba(0,255,157,0.1); color: var(--accent2); border: 1px solid rgba(0,255,157,0.2); }
+        .count-mid { background: rgba(0,200,255,0.1); color: var(--accent); border: 1px solid rgba(0,200,255,0.2); }
+        .count-low { background: rgba(100,116,139,0.1); color: var(--muted); border: 1px solid var(--border); }
+        .bar-wrap { width: 120px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; }
+        .state-box { padding: 60px 28px; text-align: center; color: var(--muted); }
+        .state-box .icon { font-size: 40px; margin-bottom: 12px; }
+        .state-box p { font-size: 14px; font-family: 'DM Mono', monospace; }
+        .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        .error-banner { display: none; margin: 16px 28px; padding: 14px 18px; background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.3); border-radius: 10px; color: var(--danger); font-size: 13px; font-family: 'DM Mono', monospace; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        footer { text-align: center; padding: 32px; color: var(--muted); font-size: 12px; font-family: 'DM Mono', monospace; }
+    </style>
 </head>
 <body>
-    
+<div class="container">
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🏥</div>
+            <div class="logo-text">
+                <h1>Ek Noor Neki Da Hospital</h1>
+                <p>LOGIN ACTIVITY DASHBOARD</p>
+            </div>
+        </div>
+        <a href="admin_dashboard (1).html" class="back-btn">← Back to Admin</a>
+    </header>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value accent" id="totalUsers">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Logins</div>
+            <div class="stat-value green" id="totalLogins">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Most Active User</div>
+            <div class="stat-value orange" id="mostActive" style="font-size:16px;padding-top:8px;">—</div>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <div>
+                <div class="table-title">User Login History</div>
+                <div class="table-subtitle">Sorted by most logins · auto-refreshes every 60s</div>
+            </div>
+            <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Refresh
+            </button>
+        </div>
+        <div class="search-bar">
+            <input class="search-input" type="text" id="searchInput" placeholder="Search by email..." oninput="filterTable()">
+        </div>
+        <div class="error-banner" id="errorBanner"></div>
+        <div id="tableWrap">
+            <div class="state-box"><div class="spinner"></div><p>Loading login data...</p></div>
+        </div>
+    </div>
+    <footer>EK NOOR NEKI DA HOSPITAL · Login Activity Monitor</footer>
+</div>
+
+<script>
+    // Replace with your actual Render URL for server.py after deployment
+    const AUTH_BASE = 'http://localhost:5001';
+
+    let allData = [];
+    let maxCount = 1;
+
+    async function loadData() {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('spinning');
+        document.getElementById('errorBanner').style.display = 'none';
+        try {
+            const res = await fetch(AUTH_BASE + '/login_history', { signal: AbortSignal.timeout(8000) });
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            allData = await res.json();
+            maxCount = allData.length > 0 ? allData[0].total_logins : 1;
+            updateStats();
+            renderTable(allData);
+        } catch (err) {
+            showError('Could not reach server. ' + err.message);
+        } finally {
+            btn.classList.remove('spinning');
+        }
+    }
+
+    function updateStats() {
+        document.getElementById('totalUsers').textContent  = allData.length;
+        document.getElementById('totalLogins').textContent = allData.reduce((s,r) => s + r.total_logins, 0);
+        document.getElementById('mostActive').textContent  = allData.length > 0 ? allData[0].email.split('@')[0] : '—';
+    }
+
+    function renderTable(data) {
+        if (data.length === 0) {
+            document.getElementById('tableWrap').innerHTML = '<div class="state-box"><div class="icon">📭</div><p>No login records found.</p></div>';
+            return;
+        }
+        let rows = '';
+        data.forEach((row, i) => {
+            const pct        = Math.round((row.total_logins / maxCount) * 100);
+            const rankIcon   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1);
+            const rankClass  = i < 3 ? 'top' : '';
+            const initial    = row.email.charAt(0).toUpperCase();
+            const countClass = row.total_logins >= 10 ? 'count-high' : row.total_logins >= 5 ? 'count-mid' : 'count-low';
+            rows += `<tr style="animation-delay:${i*0.04}s">
+                <td><span class="rank ${rankClass}">${rankIcon}</span></td>
+                <td><div class="email-cell"><div class="avatar">${initial}</div><span class="email-text">${row.email}</span></div></td>
+                <td><span class="login-count ${countClass}">🔑 ${row.total_logins} login${row.total_logins!==1?'s':''}</span></td>
+                <td><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div></td>
+            </tr>`;
+        });
+        document.getElementById('tableWrap').innerHTML = `<table>
+            <thead><tr><th style="width:60px">Rank</th><th>Email</th><th>Login Count</th><th>Activity</th></tr></thead>
+            <tbody>${rows}</tbody></table>`;
+    }
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        renderTable(allData.filter(r => r.email.toLowerCase().includes(q)));
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('errorBanner');
+        el.textContent = '⚠ ' + msg;
+        el.style.display = 'block';
+        document.getElementById('tableWrap').innerHTML = '<div class="state-box"><div class="icon">🔌</div><p>Could not connect to server.</p></div>';
+    }
+
+    loadData();
+    setInterval(loadData, 60000);
+</script>
 </body>
 </html>
-
