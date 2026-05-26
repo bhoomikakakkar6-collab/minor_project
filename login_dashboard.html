@@ -74,7 +74,19 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         footer { text-align: center; padding: 32px; color: var(--muted); font-size: 12px; font-family: 'DM Mono', monospace; }
-    </style>
+    
+
+@media (max-width: 600px) {
+  .container { padding: 20px 12px; }
+  .stats-row { grid-template-columns: 1fr; gap: 12px; }
+  .stat-value { font-size: 28px; }
+  thead th:last-child, td:last-child { display: none; }
+  .table-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  td, thead th { padding: 12px 14px; }
+  .email-text { font-size: 11px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+</style>
 </head>
 <body>
 <div class="container">
@@ -86,7 +98,7 @@
                 <p>LOGIN ACTIVITY DASHBOARD</p>
             </div>
         </div>
-        <a href="admin_dashboard (1).html" class="back-btn">← Back to Admin</a>
+        <a href="admin_dashboard__1_.html" class="back-btn">← Back to Admin</a>
     </header>
 
     <div class="stats-row">

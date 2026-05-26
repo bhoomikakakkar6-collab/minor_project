@@ -7,7 +7,7 @@
   try {
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
     var page = location.pathname.split('/').pop() || 'index.html';
-    var DASHBOARD_PAGES = ['admin_dashboard (1).html','doctor_dashboard (1).html'];
+    var DASHBOARD_PAGES = ['admin_dashboard__1_.html','doctor_dashboard.html'];
     if (!u || !u.role) {
       if (page !== 'login1.html') window.location.replace('login1.html');
       return;
@@ -726,8 +726,8 @@
     <span class="role-bar-badge">Doctor Portal</span>
   </div>
   <div class="role-bar-links">
-    <a href="doctor_dashboard__1_.html">🩺 Dashboard</a>
-    <a href="doctor_dashboard__1_.html#appointments">📅 Appointments</a>
+    <a href="doctor_dashboard.html">🩺 Dashboard</a>
+    <a href="doctor_dashboard.html#appointments">📅 Appointments</a>
     <a href="patient.html">👥 Patients</a>
   </div>
   <button class="role-bar-logout" onclick="doLogout()">⇠ Logout</button>
@@ -1039,14 +1039,14 @@ btn.disabled = false;
       if (el) el.textContent = u.name || u.email || 'Admin';
       // Update Login btn to show name
       var btn = document.getElementById('navLoginBtn');
-      if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard (1).html'; }
+      if (btn) { btn.textContent = '🛡️ ' + (u.name || 'Admin'); btn.href = 'admin_dashboard__1_.html'; }
     } else if (u && u.role === 'doctor') {
       var bar = document.getElementById('doctorBar');
       if (bar) bar.style.display = 'flex';
       var el = document.getElementById('doctorBarName');
       if (el) el.textContent = u.name || u.email || 'Doctor';
       var btn = document.getElementById('navLoginBtn');
-      if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard (1).html'; }
+      if (btn) { btn.textContent = '👨‍⚕️ ' + (u.name || 'Doctor'); btn.href = 'doctor_dashboard.html'; }
     }
   } catch(e) {}
 
