@@ -1783,10 +1783,12 @@ body::before {
         return false;
       }
       
-      // Admins always go to their dashboard
+      // Admins always go to their dashboard (unless visiting public site intentionally)
       if (u.role === 'admin') {
-        window.location.replace('admin_dashboard__1_.html');
-        return false;
+        if (new URLSearchParams(window.location.search).get('admin_view') !== '1') {
+          window.location.replace('admin_dashboard__1_.html');
+          return false;
+        }
       }
       
       // Patients can only access home page and patient.html
