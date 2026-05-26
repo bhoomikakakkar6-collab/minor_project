@@ -76,7 +76,26 @@
   .page {
     position: fixed; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    z-index: 1; padding: 74px 20px 20px;
+    z-index: 1; padding: 16px;
+  }
+  @media (max-width: 600px) {
+    .page { padding: 0; }
+    .chat-container { border-radius: 0; height: 100vh; max-width: 100%; }
+    .bubble { max-width: 85%; font-size: 13px; }
+    .header { padding: 14px 16px; }
+    .header-badges { display: none; }
+    .header-name { font-size: 15px; }
+    .sleep-bar { padding: 8px 12px; gap: 12px; }
+    .sleep-metrics { gap: 10px; }
+    .metric-val { font-size: 12px; }
+    .metric-key { font-size: 10px; }
+    .score-chip { font-size: 11px; padding: 3px 8px; }
+    .messages { padding: 12px 12px; gap: 10px; }
+    .input-bar { padding: 10px 12px; gap: 8px; }
+    .input-field { font-size: 14px; }
+    .quick-chips { padding: 6px 12px; gap: 6px; }
+    .chip { font-size: 11px; padding: 5px 10px; }
+    .attach-btn, .send-btn { width: 38px; height: 38px; }
   }
 
   .chat-container {
@@ -357,23 +376,6 @@
 </style>
 </head>
 <body>
-<!-- TOP NAV BAR -->
-<nav style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(4,44,83,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(79,142,247,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;font-family:DM Sans,sans-serif;">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;color:white;text-decoration:none;font-size:14px;font-weight:600;">
-    <span style="font-size:18px;">🏥</span> Ek Noor Neki Da Hospital
-  </a>
-  <div style="display:flex;gap:4px;flex-wrap:wrap;">
-    <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Home</a>
-    <a href="doctors.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Doctors</a>
-    <a href="patient.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Patient</a>
-    <a href="services.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Services</a>
-    <a href="about.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">About</a>
-    <a href="videos.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Videos</a>
-    <a href="contact (5).html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Contact</a>
-    <a href="assistant.html" style="color:#60a5fa;text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:8px;background:rgba(79,142,247,0.15);font-weight:600;">🤖 AI Assistant</a>
-  </div>
-</nav>
-
 <div class="page">
   <div class="chat-container">
 

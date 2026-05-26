@@ -206,7 +206,15 @@
       .left { width: 100%; padding: 2.5rem 2rem; min-height: auto; }
       .left::before, .left::after { display: none; }
     }
-  </style>
+  
+
+@media (max-width: 480px) {
+  .login-wrap { padding: 0; align-items: flex-start; min-height: 100vh; }
+  .auth-card, .login-card, .card { width: 100%; border-radius: 0 0 20px 20px; padding: 28px 20px; }
+  .login-header, .card-header { padding: 28px 20px 20px; border-radius: 0; }
+}
+
+</style>
 </head>
 <body>
 

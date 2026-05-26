@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -138,7 +138,17 @@
       .controls { width:100%; }
       .topbar-right { flex-wrap:wrap; gap:6px; }
     }
-  </style>
+  
+
+@media (max-width: 600px) {
+  .container, .dash-wrap { padding: 12px !important; }
+  .cards-row, .stats-row, .info-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .modal-box { width: 95%; margin: 10px auto; border-radius: 16px; }
+  .btn-primary, .btn-secondary { padding: 11px 16px; font-size: 13px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -855,4 +865,3 @@ checkServerAndLoad();
 </script>
 </body>
 </html>
- 

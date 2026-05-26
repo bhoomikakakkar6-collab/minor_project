@@ -362,6 +362,13 @@ to   { background-color: rgba(15,40,165,0.97); }
 #ai-iframe { width: 100%; height: 100%; border: none; }
 
 /* ── MOBILE ── */
+
+@media (max-width: 480px) {
+  .services-hero, .page-hero { padding: 70px 16px 40px !important; }
+  .services-grid, .dept-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .dept-card { padding: 20px 16px !important; }
+}
+
 @media (max-width: 768px) {
   .menu.active { display: flex; }
   .page-hero h1 { font-size: 34px; }
@@ -538,6 +545,54 @@ to   { background-color: rgba(15,40,165,0.97); }
   .role-bar-links { display: none; }
   .role-bar { justify-content: space-between; }
 }
+
+/* ═══════════════ ENHANCED MOBILE RESPONSIVE ═══════════════ */
+@media (max-width: 480px) {
+  .hero { padding: 60px 16px 40px; min-height: 90vh; }
+  .hero h1 { font-size: 38px !important; line-height: 1.1; }
+  .hero-sub { font-size: 15px !important; }
+  .hero-eyebrow { font-size: 10px; letter-spacing: 2px; }
+  .hero-cta-group { flex-direction: column; align-items: stretch; gap: 10px; }
+  .btn-primary-hero, .btn-outline-hero { padding: 14px 20px; text-align: center; justify-content: center; }
+  .stats-bar { padding: 20px 16px; flex-direction: column; gap: 0; }
+  .stat-item { border-right: none; border-bottom: 1px solid rgba(96,165,250,0.2); padding: 14px 16px; min-width: unset; max-width: unset; }
+  .stat-item:last-child { border-bottom: none; }
+  .stat-num { font-size: 32px; }
+  .services-section, .depts-section, .announcements-section { padding: 50px 16px 40px; }
+  .services-section::before, .announcements-section::before { display: none; }
+  .services-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+  .svc-card { padding: 24px 20px; }
+  .depts-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 32px; }
+  .dept-card-body img { height: 56px; }
+  .ann-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
+  .contact-section { padding: 50px 16px 40px; }
+  .cinfo-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+  .cinfo-card { padding: 20px 16px; gap: 10px; }
+  .cinfo-value { font-size: 13px; }
+  .cinfo-hours { padding: 20px 16px; gap: 16px; }
+  .cinfo-hours-slots { flex-direction: column; gap: 10px; }
+  .section-title { font-size: 28px !important; }
+  .footer-inner { grid-template-columns: 1fr; gap: 24px; padding-bottom: 24px; }
+  .site-footer { padding: 40px 16px 20px; }
+  .modal-box { margin: 0; width: 100%; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; }
+  .modal-overlay { align-items: flex-end; }
+  .modal-body { padding: 24px 20px 32px; }
+  .modal-header-strip { padding: 24px 20px 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .navbar-custom { padding: 0 16px; height: 60px; }
+  .nav-brand img { width: 38px; height: 38px; }
+  .nav-brand-name { font-size: 14px; }
+  #ai-float-btn { bottom: 20px !important; right: 16px !important; }
+  #ai-float-bubble { font-size: 11px; padding: 5px 11px; }
+  #ai-float-circle { width: 52px; height: 52px; }
+  #ai-modal-box { border-radius: 20px 20px 0 0; height: 90vh; position: fixed; bottom: 0; width: 100%; }
+  #ai-modal-overlay { align-items: flex-end; padding: 0; }
+}
+@media (max-width: 360px) {
+  .hero h1 { font-size: 30px !important; }
+  .depts-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>

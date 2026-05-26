@@ -577,6 +577,25 @@
   .layout { grid-template-columns: 1fr; }
   .form-card { position: static; }
 }
+
+
+@media (max-width: 480px) {
+  .dash-topbar { padding: 0 12px; height: 52px; }
+  .dash-topbar-brand-name { font-size: 13px; }
+  .dash-topbar-nav { display: none; }
+  .dash-topbar-right .dash-home-link { display: none; }
+  .dash-user-pill span { display: none; }
+  .content { padding: 12px 10px !important; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  .stat-card { padding: 16px 14px; }
+  .stat-value { font-size: 28px !important; }
+  .modal-box { width: 95% !important; max-width: 100%; border-radius: 16px; padding: 20px 16px; }
+  .table-wrap, table { overflow-x: auto; -webkit-overflow-scrolling: touch; display: block; width: 100%; }
+  .dash-logout-btn { padding: 6px 10px; font-size: 12px; }
+  .section-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab-btn { white-space: nowrap; }
+}
+
 </style>
 </head>
 <body>
