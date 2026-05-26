@@ -1777,10 +1777,12 @@ body::before {
       // If no user logged in, allow full access to public pages
       if (!u || !u.role) return true;
       
-      // Doctors always go to their dashboard
+      // Doctors always go to their dashboard (unless visiting public site intentionally)
       if (u.role === 'doctor') {
-        window.location.replace('doctor_dashboard.html');
-        return false;
+        if (new URLSearchParams(window.location.search).get('doctor_view') !== '1') {
+          window.location.replace('doctor_dashboard.html');
+          return false;
+        }
       }
       
       // Admins always go to their dashboard (unless visiting public site intentionally)
