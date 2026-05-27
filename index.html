@@ -193,6 +193,30 @@ body::before {
 }
 .role-bar-logout:hover { background: rgba(255,255,255,0.28); }
 
+/* ── NAVBAR MOBILE ── */
+@media (max-width: 768px) {
+  .navbar-custom {
+    height: 56px;
+    padding: 0 16px;
+  }
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0;
+    background: rgba(13,31,92,0.98);
+    padding: 12px 16px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    gap: 2px;
+  }
+  .nav-menu.open { display: flex; }
+  .nav-menu li a { padding: 11px 16px; border-radius: 8px; font-size: 14px; }
+  .menu-toggle { display: block; }
+  .role-bar-links { display: none; }
+  .role-bar { justify-content: space-between; top: 56px; }
+}
+
 /* ── ROLE BAR MOBILE ── */
 @media (max-width: 600px) {
   .role-bar {
@@ -200,7 +224,7 @@ body::before {
     padding: 8px 14px !important;
     flex-wrap: wrap;
     gap: 6px;
-    top: 60px !important;
+    top: 56px !important;
   }
   .role-bar-left {
     flex: 1 1 100%;
@@ -225,20 +249,6 @@ body::before {
     white-space: nowrap;
   }
 }
-    flex-direction: column;
-    position: absolute;
-    top: 68px;
-    left: 0; right: 0;
-    background: rgba(13,31,92,0.98);
-    padding: 12px 16px 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    gap: 2px;
-  }
-  .nav-menu.open { display: flex; }
-  .nav-menu li a { padding: 11px 16px; border-radius: 8px; font-size: 14px; }
-  .role-bar-links { display: none; }
-  .role-bar { justify-content: space-between; }
-}
 
 /* ═══════════════ HERO ═══════════════ */
 .hero {
@@ -252,6 +262,16 @@ body::before {
   color: white;
   overflow: hidden;
   padding: 80px 24px 60px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 56px 20px 48px;
+    min-height: 100svh;
+    justify-content: center;
+    align-items: center;
+  }
 }
 .hero-video {
   position: absolute;
@@ -332,8 +352,10 @@ body::before {
   gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   opacity: 0;
   animation: fadeUp 0.9s 1s forwards;
+  width: 100%;
 }
 .btn-primary-hero {
   padding: 14px 34px;
