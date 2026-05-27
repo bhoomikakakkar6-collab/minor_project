@@ -1676,75 +1676,112 @@
   }
 
   /* USERS */
-  function loadUsers(){
-    document.getElementById('usersBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr>';
+  async function loadUsers(){
+    document.getElementById('usersBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;"><div class="spinner"></div><p style="margin-top:10px;font-size:13px;color:var(--subtext);">Loading from server…</p></td></tr>';
+
+    // ── Read local cache immediately ──
+    var localHist  = [];
+    var allUsers   = [];
+    var admins     = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]').map(function(e){return e.toLowerCase();});
+    var doctors    = JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]').map(function(e){return e.toLowerCase();});
+    try { localHist = JSON.parse(localStorage.getItem('hospital_login_history') || '[]'); } catch(e){}
+    try { allUsers  = JSON.parse(localStorage.getItem('hospital_users') || '[]'); } catch(e){}
+
+    // ── Try server (primary — works across all devices) ──
+    var serverHist = [];
+    var serverOk = false;
     try {
-      // ── Primary: read from localStorage ──
-      var loginHist  = JSON.parse(localStorage.getItem('hospital_login_history') || '[]');
-      var allUsers   = JSON.parse(localStorage.getItem('hospital_users') || '[]');
-      var admins     = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]').map(function(e){return e.toLowerCase();});
-      var doctors    = JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]').map(function(e){return e.toLowerCase();});
+      const res = await fetch(AUTH_BASE+'/login_history', { signal: AbortSignal.timeout(7000) });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) { serverHist = data; serverOk = true; }
+      }
+    } catch(e) {}
 
-      // Merge: start from login history, then fill in any registered users not yet logged in
-      var map = {};
-      loginHist.forEach(function(h){
-        var emailL = h.email.toLowerCase();
-        var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : h.role || 'patient';
-        map[emailL] = { email: emailL, role: role, total_logins: h.total_logins || 0, last_login: h.last_login || '', first_login: h.first_login || '' };
-      });
-      allUsers.forEach(function(u){
-        var emailL = u.email.toLowerCase();
-        if (!map[emailL]) {
-          var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : u.role || 'patient';
-          map[emailL] = { email: emailL, role: role, total_logins: 0, last_login: '', first_login: u.createdAt || '' };
-        }
-      });
+    // ── Merge: server wins for login counts; local adds unsynced entries & roles ──
+    var map = {};
+    // Start with server data
+    serverHist.forEach(function(h){
+      var emailL = (h.email||'').toLowerCase();
+      var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : 'patient';
+      map[emailL] = { email: emailL, role: role, total_logins: h.total_logins || 0, last_login: h.last_login || '', source: 'server' };
+    });
+    // Layer local history on top (adds logins not yet on server)
+    localHist.forEach(function(h){
+      var emailL = (h.email||'').toLowerCase();
+      var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : h.role || 'patient';
+      if (!map[emailL]) {
+        map[emailL] = { email: emailL, role: role, total_logins: h.total_logins || 0, last_login: h.last_login || '', source: 'local' };
+      } else {
+        // If local has more logins (unsynced), use local count; always update role
+        if ((h.total_logins||0) > map[emailL].total_logins) map[emailL].total_logins = h.total_logins;
+        map[emailL].role = role;
+        if (h.last_login > (map[emailL].last_login||'')) map[emailL].last_login = h.last_login;
+      }
+    });
+    // Add registered users who never logged in
+    allUsers.forEach(function(u){
+      var emailL = (u.email||'').toLowerCase();
+      if (!map[emailL]) {
+        var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : u.role || 'patient';
+        map[emailL] = { email: emailL, role: role, total_logins: 0, last_login: '', source: 'registered' };
+      }
+    });
 
-      var merged = Object.values(map).sort(function(a,b){ return b.total_logins - a.total_logins; });
-      document.getElementById('sU').textContent = merged.length;
+    var merged = Object.values(map).sort(function(a,b){ return b.total_logins - a.total_logins; });
+    document.getElementById('sU').textContent = merged.length;
 
-      var roleColors = { admin:'#7c3aed', doctor:'#0369a1', patient:'#047857', visitor:'#b45309' };
-      var roleLabels = { admin:'👑 Admin', doctor:'🩺 Doctor', patient:'🧑 Patient', visitor:'👁 Visitor' };
+    var roleColors = { admin:'#7c3aed', doctor:'#0369a1', patient:'#047857', visitor:'#b45309' };
+    var roleLabels = { admin:'👑 Admin', doctor:'🩺 Doctor', patient:'🧑 Patient', visitor:'👁 Visitor' };
+    var syncNote   = serverOk
+      ? '<div style="font-size:11px;color:#16a34a;padding:8px 16px;"><span style="background:#dcfce7;padding:3px 10px;border-radius:20px;">🌐 Live — synced across all devices</span></div>'
+      : '<div style="font-size:11px;color:#b45309;padding:8px 16px;"><span style="background:#fef3c7;padding:3px 10px;border-radius:20px;">⚠️ Server offline — showing this device\'s data only. Deploy updated appointment.py to Render to enable cross-device sync.</span></div>';
 
-      document.getElementById('usersBody').innerHTML = merged.length === 0
-        ? '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--subtext);">No users yet. Users appear here after their first login.</td></tr>'
-        : merged.map(function(u, i){
-            var roleLabel = roleLabels[u.role] || u.role || 'Patient';
-            var roleColor = roleColors[u.role] || '#047857';
-            var lastLogin = u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-            var badge = u.total_logins > 0
-              ? '<span class="sb sb-accepted">'+u.total_logins+' login'+(u.total_logins!==1?'s':'')+'</span>'
-              : '<span class="sb" style="background:#f1f5f9;color:#64748b;">Never</span>';
-            return '<tr>'+
-              '<td style="font-size:12px;color:var(--subtext);">'+(i+1)+'</td>'+
-              '<td><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:'+roleColor+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">'+u.email.charAt(0).toUpperCase()+'</div><span style="font-weight:600;color:var(--text);font-size:13px;">'+u.email+'</span></div></td>'+
-              '<td><span style="font-size:12px;padding:3px 10px;border-radius:6px;font-weight:600;background:'+roleColor+'22;color:'+roleColor+';">'+roleLabel+'</span></td>'+
-              '<td>'+badge+'</td>'+
-              '<td style="font-size:12px;color:var(--subtext);">'+lastLogin+'</td>'+
-              '<td><button class="btn-del" onclick="delUser(\''+u.email+'\')">🗑 Delete</button></td>'+
-            '</tr>';
-          }).join('');
-    } catch(e) {
-      document.getElementById('usersBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:#991b1b;">⚠️ Could not load user data.</td></tr>';
+    if (merged.length === 0) {
+      document.getElementById('usersBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--subtext);">No users yet. Users appear here after their first login.</td></tr>';
+    } else {
+      document.getElementById('usersBody').innerHTML = merged.map(function(u, i){
+        var roleLabel = roleLabels[u.role] || '🧑 Patient';
+        var roleColor = roleColors[u.role] || '#047857';
+        var lastLogin = u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+        var badge = u.total_logins > 0
+          ? '<span class="sb sb-accepted">'+u.total_logins+' login'+(u.total_logins!==1?'s':'')+'</span>'
+          : '<span class="sb" style="background:#f1f5f9;color:#64748b;">Never</span>';
+        return '<tr>'+
+          '<td style="font-size:12px;color:var(--subtext);">'+(i+1)+'</td>'+
+          '<td><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:'+roleColor+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">'+u.email.charAt(0).toUpperCase()+'</div><span style="font-weight:600;color:var(--text);font-size:13px;">'+u.email+'</span></div></td>'+
+          '<td><span style="font-size:12px;padding:3px 10px;border-radius:6px;font-weight:600;background:'+roleColor+'22;color:'+roleColor+';">'+roleLabel+'</span></td>'+
+          '<td>'+badge+'</td>'+
+          '<td style="font-size:12px;color:var(--subtext);">'+lastLogin+'</td>'+
+          '<td><button class="btn-del" onclick="delUser(\''+u.email+'\')">🗑 Delete</button></td>'+
+        '</tr>';
+      }).join('');
     }
+
+    // Insert sync status note above table
+    var wrap = document.querySelector('#sec-users .tbl-wrap');
+    var existing = document.getElementById('syncNote');
+    if (existing) existing.remove();
+    var noteEl = document.createElement('div'); noteEl.id='syncNote'; noteEl.innerHTML=syncNote;
+    wrap.parentNode.insertBefore(noteEl, wrap);
   }
+
   async function delUser(email){
     if(!confirm('Delete account: '+email+'?'))return;
     try {
       // Remove from localStorage
       var hist  = JSON.parse(localStorage.getItem('hospital_login_history')||'[]');
       var users = JSON.parse(localStorage.getItem('hospital_users')||'[]');
+      var adms  = JSON.parse(localStorage.getItem('hospital_approved_admins')||'[]');
+      var docs  = JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
       localStorage.setItem('hospital_login_history', JSON.stringify(hist.filter(function(h){return h.email.toLowerCase()!==email.toLowerCase();})));
       localStorage.setItem('hospital_users', JSON.stringify(users.filter(function(u){return u.email.toLowerCase()!==email.toLowerCase();})));
-      // Also remove from approved lists
-      var admins  = JSON.parse(localStorage.getItem('hospital_approved_admins')||'[]');
-      var doctors = JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
-      localStorage.setItem('hospital_approved_admins',  JSON.stringify(admins.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
-      localStorage.setItem('hospital_approved_doctors', JSON.stringify(doctors.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
+      localStorage.setItem('hospital_approved_admins',  JSON.stringify(adms.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
+      localStorage.setItem('hospital_approved_doctors', JSON.stringify(docs.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
+      // Also remove from server
+      fetch(AUTH_BASE+'/delete_user',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});
       toast('✓ Deleted: '+email,'success');
       loadUsers();
-      // Try server delete too (silent fail)
-      fetch(AUTH_BASE+'/delete_user',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});
     } catch(e) { toast('Could not delete user','error'); }
   }
 

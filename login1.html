@@ -477,7 +477,28 @@
     }
   }
 
-  // ── RECORD LOGIN LOCALLY (for admin dashboard user control) ──
+  const SERVER = 'https://minor-project-2vf1.onrender.com';
+
+  // ── Send login event to server with retry on first attempt (server may be sleeping) ──
+  async function pingRecordLogin(email) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const res = await fetch(SERVER + '/record_login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.toLowerCase() }),
+          signal: AbortSignal.timeout(6000)
+        });
+        if (res.ok) return true;
+      } catch(e) {
+        // If first attempt fails (server sleeping), wait 2s and retry once
+        if (attempt === 0) await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+    return false; // silently fail — localStorage still has the record
+  }
+
+  // ── RECORD LOGIN LOCALLY (this device cache) ──
   function recordLoginLocally(email, role) {
     try {
       var hist = JSON.parse(localStorage.getItem('hospital_login_history') || '[]');
@@ -495,7 +516,7 @@
   }
 
   // ── LOGIN ──
-  function doLogin() {
+  async function doLogin() {
     const email    = document.getElementById('l-email').value.trim();
     const password = document.getElementById('l-pass').value.trim();
     const btn      = document.getElementById('l-btn');
@@ -525,12 +546,8 @@
       } catch(e) {}
       recordLoginLocally(SUPER_USER, 'admin');
       showMsg('l-msg','success','Welcome back, Admin! Redirecting...');
-      fetch('https://minor-project-2vf1.onrender.com/record_login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: SUPER_USER })
-      }).catch(() => {});
-      setTimeout(() => { window.location.href = 'admin_dashboard__1_.html'; }, 500);
+      await pingRecordLogin(SUPER_USER);
+      window.location.href = 'admin_dashboard__1_.html';
       return;
     }
 
@@ -571,15 +588,9 @@
       role
     }));
 
-    // ── Record login locally so admin dashboard can read it ──
+    // ── Record login locally (this device) AND on server (all devices) ──
     recordLoginLocally(email, role);
-
-    // Record login on server (fire-and-forget — don't block redirect)
-    fetch('https://minor-project-2vf1.onrender.com/record_login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    }).catch(() => {});
+    await pingRecordLogin(email);
 
     showMsg('l-msg','success','Login successful! Redirecting...');
 
@@ -587,7 +598,7 @@
     if (role === 'admin')        dest = 'admin_dashboard__1_.html';
     else if (role === 'doctor')  dest = 'doctor_dashboard.html';
 
-    setTimeout(() => { window.location.href = dest; }, 500);
+    window.location.href = dest;
   }
 </script>
 </body>
