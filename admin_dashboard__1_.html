@@ -974,8 +974,8 @@
         <div class="card-head"><h3>Staff User Accounts</h3><button class="btn-sm btn-sky" onclick="loadUsers()">↻ Refresh</button></div>
         <div class="tbl-wrap">
           <table>
-            <thead><tr><th>#</th><th>Email</th><th>Total Logins</th><th>Role</th><th>Action</th></tr></thead>
-            <tbody id="usersBody"><tr><td colspan="5" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr></tbody>
+            <thead><tr><th>#</th><th>Email</th><th>Role</th><th>Total Logins</th><th>Last Login</th><th>Action</th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="6" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1257,6 +1257,8 @@
       .then(r=>r.ok?r.json():Promise.reject()).then(server=>{allPats=mergePatients(server);refreshOverviewStats();}).catch(()=>{});
     fetch(AUTH_BASE+'/login_history',{signal:AbortSignal.timeout(3000)})
       .then(r=>r.json()).then(h=>{if(Array.isArray(h)){loginHist=h;refreshOverviewStats();}}).catch(()=>{});
+    // Also load from localStorage immediately (no server wait)
+    try { loginHist = JSON.parse(localStorage.getItem('hospital_login_history') || '[]'); refreshOverviewStats(); } catch(e) {}
   }
 
   async function fetchAllAppointments(){
@@ -1285,7 +1287,7 @@
     document.getElementById('sA').textContent  =accepted.length;
     document.getElementById('sR').textContent  =rejected.length;
     document.getElementById('sPat').textContent=allPats.length;
-    document.getElementById('sU').textContent  =loginHist.length;
+    document.getElementById('sU').textContent  =(()=>{ try{ return JSON.parse(localStorage.getItem('hospital_login_history')||'[]').length; }catch(e){ return loginHist.length; }})();
     document.getElementById('sDocs').textContent=getDoctors().length;
 
     /* dept chart */
@@ -1604,8 +1606,11 @@
       if(a.status==='accepted') events.push({text:`Appointment accepted — <strong>${a.full_name}</strong>`,time:fmtDFull(a.date),dot:'#22c55e'});
       if(a.status==='rejected') events.push({text:`Appointment rejected — <strong>${a.full_name}</strong> (${a.reason||'No reason'})`,time:fmtDFull(a.date),dot:'#ef4444'});
     });
-    loginHist.slice(0,10).forEach(u=>{
-      events.push({text:`Staff login — <strong>${u.email}</strong> (${u.total_logins} total sessions)`,time:'Recent',dot:'#8b5cf6'});
+    const localLoginHist = JSON.parse(localStorage.getItem('hospital_login_history')||'[]');
+    const feedHist = localLoginHist.length > 0 ? localLoginHist : loginHist;
+    feedHist.slice(0,10).forEach(u=>{
+      const lastTime = u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Recent';
+      events.push({text:`User login — <strong>${u.email}</strong> · ${u.role||'patient'} · ${u.total_logins} session${u.total_logins!==1?'s':''}`,time:lastTime,dot:'#8b5cf6'});
     });
     const el=document.getElementById('activityFeed');
     el.innerHTML=events.length===0
@@ -1671,40 +1676,76 @@
   }
 
   /* USERS */
-  async function loadUsers(){
-    document.getElementById('usersBody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr>';
-    try{
-      const res=await fetch(AUTH_BASE+'/login_history',{signal:AbortSignal.timeout(5000)});
-      const data=await res.json();
-      // Guard: server must return an array
-      if(!res.ok || !Array.isArray(data)){
-        throw new Error(Array.isArray(data)?'Bad response':((data&&data.error)||'Server error'));
-      }
-      loginHist=data;
-      document.getElementById('sU').textContent=loginHist.length;
-      document.getElementById('usersBody').innerHTML=loginHist.length===0
-        ?'<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--subtext);">No users found. Users appear here after their first login.</td></tr>'
-        :loginHist.map((u,i)=>`
-          <tr>
-            <td style="font-size:12px;color:var(--subtext);">${i+1}</td>
-            <td style="font-weight:600;color:var(--text);">${u.email}</td>
-            <td><span class="sb sb-accepted">${u.total_logins} login${u.total_logins!==1?'s':''}</span></td>
-            <td><span class="sb" style="background:#f3e8ff;color:#6b21a8;">Staff</span></td>
-            <td><button class="btn-del" onclick="delUser('${u.email}')">🗑 Delete</button></td>
-          </tr>`).join('');
-    }catch(e){
-      document.getElementById('sU').textContent='—';
-      document.getElementById('usersBody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:28px;color:#991b1b;">
-        ⚠️ Could not reach server. Check your connection and try again.<br>
-        <span style="font-size:12px;color:var(--subtext);margin-top:6px;display:block;">The server may still be waking up — wait 30 seconds and retry.</span>
-        <button class="btn-sm btn-sky" style="margin-top:12px;" onclick="loadUsers()">↺ Retry</button>
-      </td></tr>`;
+  function loadUsers(){
+    document.getElementById('usersBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;"><div class="spinner"></div></td></tr>';
+    try {
+      // ── Primary: read from localStorage ──
+      var loginHist  = JSON.parse(localStorage.getItem('hospital_login_history') || '[]');
+      var allUsers   = JSON.parse(localStorage.getItem('hospital_users') || '[]');
+      var admins     = JSON.parse(localStorage.getItem('hospital_approved_admins') || '[]').map(function(e){return e.toLowerCase();});
+      var doctors    = JSON.parse(localStorage.getItem('hospital_approved_doctors') || '[]').map(function(e){return e.toLowerCase();});
+
+      // Merge: start from login history, then fill in any registered users not yet logged in
+      var map = {};
+      loginHist.forEach(function(h){
+        var emailL = h.email.toLowerCase();
+        var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : h.role || 'patient';
+        map[emailL] = { email: emailL, role: role, total_logins: h.total_logins || 0, last_login: h.last_login || '', first_login: h.first_login || '' };
+      });
+      allUsers.forEach(function(u){
+        var emailL = u.email.toLowerCase();
+        if (!map[emailL]) {
+          var role = admins.includes(emailL) ? 'admin' : doctors.includes(emailL) ? 'doctor' : u.role || 'patient';
+          map[emailL] = { email: emailL, role: role, total_logins: 0, last_login: '', first_login: u.createdAt || '' };
+        }
+      });
+
+      var merged = Object.values(map).sort(function(a,b){ return b.total_logins - a.total_logins; });
+      document.getElementById('sU').textContent = merged.length;
+
+      var roleColors = { admin:'#7c3aed', doctor:'#0369a1', patient:'#047857', visitor:'#b45309' };
+      var roleLabels = { admin:'👑 Admin', doctor:'🩺 Doctor', patient:'🧑 Patient', visitor:'👁 Visitor' };
+
+      document.getElementById('usersBody').innerHTML = merged.length === 0
+        ? '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--subtext);">No users yet. Users appear here after their first login.</td></tr>'
+        : merged.map(function(u, i){
+            var roleLabel = roleLabels[u.role] || u.role || 'Patient';
+            var roleColor = roleColors[u.role] || '#047857';
+            var lastLogin = u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+            var badge = u.total_logins > 0
+              ? '<span class="sb sb-accepted">'+u.total_logins+' login'+(u.total_logins!==1?'s':'')+'</span>'
+              : '<span class="sb" style="background:#f1f5f9;color:#64748b;">Never</span>';
+            return '<tr>'+
+              '<td style="font-size:12px;color:var(--subtext);">'+(i+1)+'</td>'+
+              '<td><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:'+roleColor+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">'+u.email.charAt(0).toUpperCase()+'</div><span style="font-weight:600;color:var(--text);font-size:13px;">'+u.email+'</span></div></td>'+
+              '<td><span style="font-size:12px;padding:3px 10px;border-radius:6px;font-weight:600;background:'+roleColor+'22;color:'+roleColor+';">'+roleLabel+'</span></td>'+
+              '<td>'+badge+'</td>'+
+              '<td style="font-size:12px;color:var(--subtext);">'+lastLogin+'</td>'+
+              '<td><button class="btn-del" onclick="delUser(\''+u.email+'\')">🗑 Delete</button></td>'+
+            '</tr>';
+          }).join('');
+    } catch(e) {
+      document.getElementById('usersBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:#991b1b;">⚠️ Could not load user data.</td></tr>';
     }
   }
   async function delUser(email){
-    if(!confirm(`Delete account: ${email}?`))return;
-    try{const res=await fetch(AUTH_BASE+'/delete_user',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});const d=await res.json();if(res.ok){toast('✓ Deleted: '+email,'success');loadUsers();}else toast(d.error||'Delete failed.','error');}
-    catch{toast('Server not reachable','error');}
+    if(!confirm('Delete account: '+email+'?'))return;
+    try {
+      // Remove from localStorage
+      var hist  = JSON.parse(localStorage.getItem('hospital_login_history')||'[]');
+      var users = JSON.parse(localStorage.getItem('hospital_users')||'[]');
+      localStorage.setItem('hospital_login_history', JSON.stringify(hist.filter(function(h){return h.email.toLowerCase()!==email.toLowerCase();})));
+      localStorage.setItem('hospital_users', JSON.stringify(users.filter(function(u){return u.email.toLowerCase()!==email.toLowerCase();})));
+      // Also remove from approved lists
+      var admins  = JSON.parse(localStorage.getItem('hospital_approved_admins')||'[]');
+      var doctors = JSON.parse(localStorage.getItem('hospital_approved_doctors')||'[]');
+      localStorage.setItem('hospital_approved_admins',  JSON.stringify(admins.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
+      localStorage.setItem('hospital_approved_doctors', JSON.stringify(doctors.filter(function(e){return e.toLowerCase()!==email.toLowerCase();})));
+      toast('✓ Deleted: '+email,'success');
+      loadUsers();
+      // Try server delete too (silent fail)
+      fetch(AUTH_BASE+'/delete_user',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});
+    } catch(e) { toast('Could not delete user','error'); }
   }
 
   /* SETTINGS */

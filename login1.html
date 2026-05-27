@@ -477,6 +477,23 @@
     }
   }
 
+  // ── RECORD LOGIN LOCALLY (for admin dashboard user control) ──
+  function recordLoginLocally(email, role) {
+    try {
+      var hist = JSON.parse(localStorage.getItem('hospital_login_history') || '[]');
+      var emailL = email.toLowerCase();
+      var entry = hist.find(function(h){ return h.email === emailL; });
+      if (entry) {
+        entry.total_logins = (entry.total_logins || 0) + 1;
+        entry.last_login   = new Date().toISOString();
+        entry.role         = role || entry.role || 'patient';
+      } else {
+        hist.push({ email: emailL, role: role || 'patient', total_logins: 1, first_login: new Date().toISOString(), last_login: new Date().toISOString() });
+      }
+      localStorage.setItem('hospital_login_history', JSON.stringify(hist));
+    } catch(e) {}
+  }
+
   // ── LOGIN ──
   function doLogin() {
     const email    = document.getElementById('l-email').value.trim();
@@ -506,6 +523,7 @@
           localStorage.setItem('hospital_approved_admins', JSON.stringify(sl_admins));
         }
       } catch(e) {}
+      recordLoginLocally(SUPER_USER, 'admin');
       showMsg('l-msg','success','Welcome back, Admin! Redirecting...');
       fetch('https://minor-project-2vf1.onrender.com/record_login', {
         method: 'POST',
@@ -552,6 +570,9 @@
       name: email.split('@')[0],
       role
     }));
+
+    // ── Record login locally so admin dashboard can read it ──
+    recordLoginLocally(email, role);
 
     // Record login on server (fire-and-forget — don't block redirect)
     fetch('https://minor-project-2vf1.onrender.com/record_login', {
