@@ -21,10 +21,10 @@ CORS(app, resources={r"/*": {"origins": "*"}},
 # and works on Render free tier. Direct connection (port 5432) fails
 # because Render free tier cannot reach Supabase over IPv6.
 DB_CONFIG = {
-    "host":     os.environ.get("DB_HOST",     "aws-0-ap-south-1.pooler.supabase.com"),
-    "dbname":   os.environ.get("DB_NAME",     "postgres"),
-    "user":     os.environ.get("DB_USER",     "postgres.ldnukfbfqjxvzsxggwwt"),
-    "password": os.environ.get("DB_PASSWORD", "kakkar3010"),
+    "host":     os.environ["DB_HOST"],
+    "dbname":   os.environ.get("DB_NAME", "postgres"),
+    "user":     os.environ["DB_USER"],
+    "password": os.environ["DB_PASSWORD"],
     "port":     int(os.environ.get("DB_PORT", 6543)),
     "sslmode":  "require"
 }
