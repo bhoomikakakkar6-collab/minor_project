@@ -1136,10 +1136,14 @@
   (function(){
     try{
       const u=JSON.parse(localStorage.getItem('hospital_user')||localStorage.getItem('tl_currentUser')||'{}');
-      if(u.email||u.name){
-        document.getElementById('adminName').textContent=u.name||'Administrator';
-        document.getElementById('adminEmail').textContent=u.email||'admin@hospital.com';
-      }
+      const displayName = u.name || (u.email ? u.email.split('@')[0] : 'Administrator');
+      const displayEmail = u.email || 'admin@hospital.com';
+      if(document.getElementById('adminName'))
+        document.getElementById('adminName').textContent = displayName;
+      if(document.getElementById('adminEmail'))
+        document.getElementById('adminEmail').textContent = displayEmail;
+      if(document.getElementById('topbarAdminName'))
+        document.getElementById('topbarAdminName').textContent = displayName;
     }catch(e){}
   })();
 
@@ -1894,10 +1898,11 @@
 (function() {
   try {
     var u = JSON.parse(localStorage.getItem('hospital_user') || '{}');
+    var displayName = u.name || (u.email ? u.email.split('@')[0] : 'Admin');
     var adminEl  = document.getElementById('topbarAdminName');
     var doctorEl = document.getElementById('topbarDoctorName');
-    if (adminEl  && u.name) adminEl.textContent  = u.name || u.email || 'Admin';
-    if (doctorEl && u.name) doctorEl.textContent = u.name || u.email || 'Doctor';
+    if (adminEl)  adminEl.textContent  = displayName;
+    if (doctorEl) doctorEl.textContent = displayName;
   } catch(e) {}
   window.doLogout = window.doLogout || function() {
     ['hospital_user','tl_loggedIn','tl_currentUser'].forEach(function(k){ localStorage.removeItem(k); });

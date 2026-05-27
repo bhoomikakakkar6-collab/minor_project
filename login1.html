@@ -507,6 +507,11 @@
         }
       } catch(e) {}
       showMsg('l-msg','success','Welcome back, Admin! Redirecting...');
+      fetch('https://minor-project-2vf1.onrender.com/record_login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: SUPER_USER })
+      }).catch(() => {});
       setTimeout(() => { window.location.href = 'admin_dashboard__1_.html'; }, 500);
       return;
     }
@@ -547,6 +552,13 @@
       name: email.split('@')[0],
       role
     }));
+
+    // Record login on server (fire-and-forget — don't block redirect)
+    fetch('https://minor-project-2vf1.onrender.com/record_login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    }).catch(() => {});
 
     showMsg('l-msg','success','Login successful! Redirecting...');
 

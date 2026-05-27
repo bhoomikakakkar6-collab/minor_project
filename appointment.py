@@ -238,6 +238,41 @@ def login():
         if conn is not None: conn.close()
 
 # ── Delete User Route ────────────────────────────────────
+@app.route('/record_login', methods=['POST'])
+def record_login():
+    """Record a login event without password validation.
+    Called by the frontend after localStorage-based auth succeeds."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body."}), 400
+    email = (data.get('email') or '').strip().lower()
+    if not email:
+        return jsonify({"error": "Email is required."}), 400
+    conn = cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({"error": "Database connection failed."}), 500
+        cur = conn.cursor()
+        ip_address = request.remote_addr
+        cur.execute(
+            "INSERT INTO login_history (email, ip_address) VALUES (%s, %s)",
+            (email, ip_address)
+        )
+        cur.execute(
+            "SELECT COUNT(*) FROM login_history WHERE email = %s", (email,)
+        )
+        count = cur.fetchone()[0]
+        conn.commit()
+        return jsonify({"message": "Login recorded.", "login_count": count}), 200
+    except Exception as error:
+        print("Record login error:", error)
+        if conn: conn.rollback()
+        return jsonify({"error": "Failed to record login."}), 500
+    finally:
+        if cur  is not None: cur.close()
+        if conn is not None: conn.close()
+
 @app.route('/delete_user', methods=['DELETE'])
 def delete_user():
     data  = request.get_json() or {}
