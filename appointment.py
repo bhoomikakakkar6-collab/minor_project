@@ -16,7 +16,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}},
      supports_credentials=True)
 
-# ── Database Config hello ──────────────────────────────────────
+# ── Database Config ──────────────────────────────────────
 DB_CONFIG = {
     "host":     os.environ.get("DB_HOST",     "localhost"),
     "dbname":   os.environ.get("DB_NAME",     "postgres"),
